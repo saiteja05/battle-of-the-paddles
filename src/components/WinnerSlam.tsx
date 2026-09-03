@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
 import { useEffect } from "react";
 import { BattleTitle, BrandLockup, BrandStripe } from "./Brand";
 import { celebrateWinnerName } from "@/lib/display";
@@ -57,23 +56,8 @@ export function WinnerSlam() {
               <div className="mt-5 border-t-4 border-black pt-4">
                 <BattleTitle size="sm" animate={!reduce} className="!text-xl sm:!text-2xl" />
               </div>
-              <div className="mt-4 flex items-end justify-center gap-6">
-                <Image
-                  src="/logos/openai-black.svg"
-                  alt="OpenAI"
-                  width={120}
-                  height={30}
-                  className="h-6 w-auto"
-                  unoptimized
-                />
-                <Image
-                  src="/logos/mongodb-black.svg"
-                  alt="MongoDB"
-                  width={140}
-                  height={30}
-                  className="h-6 w-auto"
-                  unoptimized
-                />
+              <div className="mt-4 flex items-end justify-center">
+                <BrandLockup size="sm" tone="onPaper" />
               </div>
             </div>
           </motion.div>

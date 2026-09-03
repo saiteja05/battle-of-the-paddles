@@ -195,6 +195,34 @@ body::after {
   flex: 1;
 }
 
+/* Corporate logo lockup — never inherit comic chromatic / glitch styles */
+.brand-lockup {
+  isolation: isolate;
+  position: relative;
+  z-index: 2;
+}
+
+.brand-lockup__mark,
+.brand-lockup__logo {
+  display: block;
+  flex-shrink: 0;
+  filter: none !important;
+  mix-blend-mode: normal;
+  text-shadow: none !important;
+}
+
+.brand-lockup__word {
+  font-family: var(--font-archivo-black), sans-serif;
+  text-shadow: none !important;
+  filter: none !important;
+  mix-blend-mode: normal;
+}
+
+.brand-lockup__x {
+  text-shadow: none !important;
+  filter: none !important;
+}
+
 .venue-chip {
   display: inline-block;
   font-family: var(--font-archivo-black), sans-serif;

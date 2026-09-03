@@ -1,29 +1,32 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
 import { EVENT } from "@/lib/types";
 
 type LogoTone = "onInk" | "onPaper";
 
-function logoVariant(tone: LogoTone): { openai: string; mongo: string } {
+function markVariant(tone: LogoTone): { openai: string; mongo: string } {
   return tone === "onPaper"
-    ? { openai: "/logos/openai-black.svg", mongo: "/logos/mongodb-black.svg" }
-    : { openai: "/logos/openai-white.svg", mongo: "/logos/mongodb-green.svg" };
+    ? { openai: "/logos/openai-mark-black.svg", mongo: "/logos/mongodb-mark-black.svg" }
+    : { openai: "/logos/openai-mark-white.svg", mongo: "/logos/mongodb-mark-green.svg" };
 }
 
-const LOGO_HEIGHT = { sm: 22, md: 28, lg: 36 } as const;
+const LOGO_SIZES = {
+  sm: { mark: "h-6 w-6", leaf: "h-7 w-4", word: "text-sm", x: "text-xl" },
+  md: { mark: "h-8 w-8", leaf: "h-9 w-5", word: "text-lg", x: "text-2xl" },
+  lg: { mark: "h-10 w-10", leaf: "h-11 w-7", word: "text-2xl", x: "text-3xl" },
+} as const;
 
 /** Official OpenAI blossom mark (SVG asset). */
 export function OpenAiMark({ className = "h-7 w-7", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
-  const src = tone === "onPaper" ? "/logos/openai-black.svg" : "/logos/openai-mark-white.svg";
-  return <Image src={src} alt="" width={32} height={32} className={className} aria-hidden unoptimized />;
+  const src = tone === "onPaper" ? "/logos/openai-mark-black.svg" : "/logos/openai-mark-white.svg";
+  return <img src={src} alt="" className={className} aria-hidden />;
 }
 
 /** Official MongoDB leaf mark (SVG asset). */
 export function MongoLeaf({ className = "h-8 w-5", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
-  const src = tone === "onPaper" ? "/logos/mongodb-black.svg" : "/logos/mongodb-mark-green.svg";
-  return <Image src={src} alt="" width={24} height={36} className={className} aria-hidden unoptimized />;
+  const src = tone === "onPaper" ? "/logos/mongodb-mark-black.svg" : "/logos/mongodb-mark-green.svg";
+  return <img src={src} alt="" className={className} aria-hidden />;
 }
 
 export function BrandStripe() {
@@ -51,39 +54,30 @@ export function BrandLockup({
   animate?: boolean;
 }) {
   const reduce = useReducedMotion();
-  const logos = logoVariant(tone);
-  const h = LOGO_HEIGHT[size];
-  const wrap = size === "lg" ? "h-9" : size === "sm" ? "h-5" : "h-7";
-  const x = size === "lg" ? "text-3xl" : size === "sm" ? "text-xl" : "text-2xl";
+  const marks = markVariant(tone);
+  const s = LOGO_SIZES[size];
+  const word = tone === "onPaper" ? "text-ink" : "text-paper";
 
   const content = (
     <div
-      className={`flex items-center gap-2 ${stacked ? "flex-col sm:flex-row" : ""}`}
+      className={`brand-lockup flex items-center gap-2 ${stacked ? "flex-col sm:flex-row" : ""}`}
       role="group"
       aria-label="OpenAI times MongoDB"
     >
-      <Image
-        src={logos.openai}
-        alt="OpenAI"
-        width={320}
-        height={80}
-        className={`${wrap} w-auto`}
-        unoptimized
-      />
+      <span className="inline-flex items-center gap-1.5">
+        <img src={marks.openai} alt="" className={`brand-lockup__mark ${s.mark}`} aria-hidden />
+        <span className={`brand-lockup__word font-black leading-none tracking-tight ${word} ${s.word}`}>OpenAI</span>
+      </span>
       <span
-        className={`font-bangers leading-none ${tone === "onPaper" ? "text-evergreen" : "text-gold"} ${x}`}
+        className={`brand-lockup__x font-bangers leading-none ${tone === "onPaper" ? "text-evergreen" : "text-gold"} ${s.x}`}
         aria-hidden
       >
         ×
       </span>
-      <Image
-        src={logos.mongo}
-        alt="MongoDB"
-        width={360}
-        height={80}
-        className={`${wrap} w-auto`}
-        unoptimized
-      />
+      <span className="inline-flex items-center gap-1.5">
+        <img src={marks.mongo} alt="" className={`brand-lockup__mark ${s.leaf}`} aria-hidden />
+        <span className={`brand-lockup__word font-black leading-none tracking-tight ${word} ${s.word}`}>MongoDB</span>
+      </span>
     </div>
   );
 

@@ -1,9 +1,8 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { BattleTitle, BrandLockup, BrandStripe } from "./Brand";
+import { BrandLockup, BrandStripe } from "./Brand";
 import { useEvent } from "./Providers";
 
 const LINKS = [
@@ -27,7 +26,6 @@ function navHue(href: string, on: boolean) {
 export function NavBar() {
   const path = usePathname();
   const { event } = useEvent();
-  const reduce = useReducedMotion();
   if (path.startsWith("/tv")) return null;
   return (
     <header className="sticky top-0 z-30 border-b-4 border-black bg-forest/92 backdrop-blur">
@@ -35,10 +33,7 @@ export function NavBar() {
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
         <div>
           <BrandLockup size="sm" />
-          <div className="mt-1">
-            <BattleTitle size="sm" animate={!reduce} className="!text-2xl sm:!text-3xl" />
-          </div>
-          <p className="font-cond text-xs uppercase tracking-wider text-paper/70">
+          <p className="mt-1 font-cond text-xs uppercase tracking-wider text-paper/70">
             SPIN San Francisco · Sep 9 · rev {event.revision}
           </p>
         </div>
