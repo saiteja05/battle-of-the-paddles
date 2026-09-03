@@ -4,24 +4,46 @@ Run the tournament app **locally on your laptop**. No VM, no tunnels, no Docker,
 
 Tournament data is saved to `data/tournament.json` on disk — works fully offline.
 
-## Get the code
+## Get the code first
 
-**Option A — Git clone** (after you push this repo to GitHub):
+**`/agent` is not on your Mac.** That path exists only on the Cursor Cloud Agent VM where the agent built this project. Running `cd agent` on your laptop will fail — there is no `agent` folder there.
+
+You need to copy the project to your machine first. Pick one option below.
+
+### Option A — Download the zip (recommended)
+
+1. Open your Cursor agent run: [Agent run → files / artifacts](https://cursor.com/agents/bc-f329837e-2485-500e-90de-32ef9ef78da4)
+2. Download **`battle-of-the-paddles.zip`** from the workspace (created at `/agent/battle-of-the-paddles.zip` on the VM; excludes `node_modules` and `.next`).
+3. On your Mac, unzip and enter the folder:
+
+```bash
+cd ~/Downloads   # or wherever the zip landed
+unzip battle-of-the-paddles.zip -d battle-of-the-paddles
+cd battle-of-the-paddles
+```
+
+### Option B — Copy from Cursor file explorer
+
+In the Cursor agent run, browse the workspace file tree, select the project files (or the whole tree), and export/download to your Mac. Name the folder `battle-of-the-paddles`, then:
+
+```bash
+cd ~/path/to/battle-of-the-paddles
+```
+
+### Option C — Git clone (not available yet)
+
+This project has **no GitHub remote configured** on the agent VM. You cannot `git clone` it until someone pushes it to GitHub and gives you a URL.
+
+To use git later: push the repo to your own GitHub account, then:
 
 ```bash
 git clone <your-repo-url>
 cd battle-of-the-paddles
 ```
 
-**Option B — Copy the folder** from a Cursor agent run:
+### After you have the folder
 
-Download or copy the `/agent` project folder to your machine, then:
-
-```bash
-cd battle-of-the-paddles   # or whatever you named the folder
-```
-
-If you do not have a git remote yet, copy the folder from Cursor agent artifacts or push to your own GitHub and clone locally.
+Continue with **Requirements** and **Quick start** below. You will run `npm install` locally to recreate `node_modules` (the zip intentionally omits it).
 
 ## Requirements
 
