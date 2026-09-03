@@ -9,8 +9,8 @@ import { competitorsOf } from "@/lib/csv";
 
 const TILES = [
   { href: "/setup", title: "Setup", copy: "Import, check-in, freeze & generate", hue: "bg-crimson text-paper" },
-  { href: "/board/a", title: "Board A", copy: "OpenAI ink — black / teal twin", hue: "tile-oa bg-oa-black text-openai" },
-  { href: "/board/b", title: "Board B", copy: "Mongo leaf — forest / spring twin", hue: "tile-mongo bg-evergreen text-leaf" },
+  { href: "/board/a", title: "Board A", copy: "Bracket A · 64-slot tree", hue: "tile-oa bg-oa-black text-openai" },
+  { href: "/board/b", title: "Board B", copy: "Bracket B · 64-slot tree", hue: "tile-mongo bg-evergreen text-leaf" },
   { href: "/now", title: "Now Playing", copy: "Ready + called tables", hue: "bg-mag text-paper" },
   { href: "/finals", title: "Finals", copy: "3rd place, grand final, podium", hue: "bg-paper text-ink" },
   { href: "/tv", title: "TV Mode", copy: "Read-only display · no emails", hue: "bg-forest text-leaf" },

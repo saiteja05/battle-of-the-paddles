@@ -3,6 +3,7 @@ import {
   byeAdvanceHint,
   celebrateWinnerName,
   nextRoundLabel,
+  playerSub,
   slotName,
   vacantOpponentLabel,
 } from "../src/lib/display";
@@ -68,5 +69,12 @@ describe("vacant bye copy", () => {
     expect(celebrateWinnerName([rahul], { type: "bye", winnerId: "p-1" })).toBeNull();
     expect(celebrateWinnerName([rahul], { type: "winner", winnerId: "p-1" })).toBe("Rahul Sharma");
     expect(celebrateWinnerName([{ ...rahul, name: "BYE" }], { type: "winner", winnerId: "p-1" })).toBeNull();
+  });
+});
+
+describe("playerSub", () => {
+  it("shows skill only — not company affiliation", () => {
+    expect(playerSub(rahul)).toBe("Beginner");
+    expect(playerSub({ ...rahul, company: "OpenAI", mergedCount: 2 })).toBe("Beginner · merged×2");
   });
 });

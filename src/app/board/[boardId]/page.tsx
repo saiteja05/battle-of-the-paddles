@@ -3,31 +3,24 @@
 import { useParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { BracketView } from "@/components/BracketView";
-import { MongoLeaf, OpenAiMark, VenueChip } from "@/components/Brand";
+import { VenueChip } from "@/components/Brand";
 import type { BoardId } from "@/lib/types";
 
 export default function BoardPage() {
   const params = useParams<{ boardId: string }>();
   const raw = String(params.boardId || "a").toUpperCase();
   const boardId: BoardId = raw === "B" ? "B" : "A";
-  const mongo = boardId === "B";
+  const boardB = boardId === "B";
   return (
     <AppShell>
-      <div className={mongo ? "universe-b" : "universe-a"}>
+      <div className={boardB ? "universe-b" : "universe-a"}>
         <div className="flex flex-wrap items-center gap-3">
-          <p className="slam-caption">{mongo ? "MongoDB universe" : "OpenAI universe"}</p>
-          {mongo ? (
-            <MongoLeaf className="leaf-stamp h-9 w-6 text-leaf" />
-          ) : (
-            <OpenAiMark className="h-8 w-8 text-openai" />
-          )}
+          <p className="slam-caption">{boardB ? "Right board" : "Left board"}</p>
           <VenueChip />
         </div>
         <h1 className="mt-2 font-bangers chromatic text-5xl">Board {boardId}</h1>
         <p className="mt-2 max-w-3xl font-cond text-lg">
-          {mongo
-            ? "Forest ink, leaf stamps — same comic chrome as Board A, different palette."
-            : "Near-black panels, teal ink — same comic chrome as Board B, different palette."}{" "}
+          Bracket {boardId} · 64-slot tree. Same comic chrome as Board {boardB ? "A" : "B"}, different palette.{" "}
           Slot numbers match the paper sheets (example <span className="font-black">{boardId}-R64-07</span>). Tap a name
           once for the gold confirm glow, tap again to commit. Vacant slots read No opponent — tap the real name, not
           the empty plate. Undo cascades.

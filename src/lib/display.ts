@@ -55,7 +55,6 @@ export function playerSub(p?: Player): string {
   if (!p) return "";
   const bits = [skillLabel(p.skill)];
   if (p.mergedCount > 1) bits.push(`merged×${p.mergedCount}`);
-  if (p.company) bits.push(p.company);
   return bits.join(" · ");
 }
 

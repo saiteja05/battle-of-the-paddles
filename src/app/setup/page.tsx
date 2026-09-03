@@ -149,7 +149,6 @@ export default function SetupPage() {
                 <div className="text-sm font-cond">
                   {skillLabel(p.skill)}
                   {p.mergedCount > 1 ? ` · merged×${p.mergedCount}` : ""}
-                  {p.company ? ` · ${p.company}` : ""}
                 </div>
               </button>
             </li>
