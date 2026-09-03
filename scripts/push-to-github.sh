@@ -11,6 +11,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 REPO_NAME="${REPO_NAME:-battle-of-the-paddles}"
+DEFAULT_USER="${GITHUB_USER:-saiteja05}"
 
 if [[ -z "${GITHUB_USER:-}" || -z "${GITHUB_TOKEN:-}" ]]; then
   echo "Missing credentials."
@@ -19,7 +20,7 @@ if [[ -z "${GITHUB_USER:-}" || -z "${GITHUB_TOKEN:-}" ]]; then
   echo "   Scope: repo (full control of private repositories)"
   echo ""
   echo "2. Run:"
-  echo "   GITHUB_USER=YOUR_USERNAME GITHUB_TOKEN=ghp_xxx ./scripts/push-to-github.sh"
+  echo "   GITHUB_USER=${DEFAULT_USER} GITHUB_TOKEN=ghp_xxx ./scripts/push-to-github.sh"
   exit 1
 fi
 
