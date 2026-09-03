@@ -69,11 +69,34 @@ npm run dev
 
 http://localhost:3000 — PIN **0909**
 
-## GitHub Pages (optional)
+## GitHub Pages setup (your screenshot)
 
-After push: **Settings → Pages → Build and deployment → GitHub Actions**
+**Do not use “Deploy from a branch → main / (root)”.** That serves raw source code, not the app.
 
-Live at: **https://saiteja05.github.io/battle-of-the-paddles/**
+### Correct settings
+
+1. **Settings → Pages → Build and deployment**
+2. **Source:** **GitHub Actions** (not “Deploy from a branch”)
+3. **Custom domain:** `battle.leafsteroids.net` (DNS check OK — good)
+4. **Enforce HTTPS:** turns on automatically once the certificate is issued (can take up to 24 hours)
+
+### After you push
+
+The workflow `.github/workflows/deploy-pages.yml` builds the static site and deploys it.
+
+Live URL: **https://battle.leafsteroids.net**  
+PIN: **0909**
+
+### Pull latest on your Mac and push
+
+```bash
+cd /Users/teja.boddapati/Downloads/battle-of-the-paddles/battle-of-the-paddles
+git pull origin main
+# or merge changes from this repo if diverged
+git push origin main
+```
+
+Then check **Actions** tab — wait for “Deploy GitHub Pages” to go green.
 
 ## What gets committed
 
