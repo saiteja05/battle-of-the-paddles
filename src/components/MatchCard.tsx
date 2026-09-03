@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { matchCanSelectWinner, matchReady } from "@/lib/bracket";
 import type { Match, Player } from "@/lib/types";
-import { byeAdvanceHint, playerMap, playerSub, slotName, vacantOpponentLabel } from "@/lib/display";
+import { byeAdvanceHint, playerMap, playerSub, slotName } from "@/lib/display";
 import { MongoLeaf } from "./Brand";
 import { useEvent } from "./Providers";
 
@@ -68,21 +68,8 @@ export function MatchCard({
     }
   }
 
-  function vacantPlate() {
-    return (
-      <div
-        data-slot="vacant"
-        className={`vacant-slot w-full px-3 py-3 text-left ${large ? "min-h-20" : "min-h-14"}`}
-        aria-label={`${vacantOpponentLabel()}. ${byeAdvanceHint(match)}`}
-      >
-        <div className="font-cond text-sm font-semibold tracking-wide text-paper/90">{vacantOpponentLabel()}</div>
-        <div className="mt-0.5 font-cond text-xs leading-snug text-paper/60">{byeAdvanceHint(match)}</div>
-      </div>
-    );
-  }
-
   function slotBtn(player: Player | undefined, id: string | null) {
-    if (!id && match.isBye) return vacantPlate();
+    if (!id) return null;
     const selected = pending && id && pending === id;
     const won = match.winnerId && id && match.winnerId === id;
     const label = slotName(players, id);
@@ -120,7 +107,7 @@ export function MatchCard({
       <div className="space-y-2">
         {slotBtn(p1, match.player1Id)}
         {match.isBye ? (
-          <div className="mx-8 border-t border-dashed border-paper/25" aria-hidden />
+          <p className="px-1 font-cond text-xs leading-snug text-paper/70">{byeAdvanceHint(match)}</p>
         ) : (
           <div className="match-vs text-center font-bangers text-lg text-mag">VS</div>
         )}

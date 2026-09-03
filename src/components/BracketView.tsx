@@ -11,11 +11,10 @@ export function BracketView({ boardId }: { boardId: BoardId }) {
   return (
     <div className="flex gap-3 overflow-x-auto pb-8">
       {rounds.map((round) => {
-        const matches = event.matches
-          .filter((m) => m.boardId === boardId && m.round === round)
+        const listed = event.matches
+          .filter((m) => m.boardId === boardId && m.round === round && matchIsListed(m))
           .sort((a, b) => a.slot - b.slot);
-        if (matches.length === 0) return null;
-        const listed = matches.filter(matchIsListed);
+        if (listed.length === 0) return null;
         return (
           <section key={round} className="flex min-w-[260px] flex-col gap-3">
             <h2 className="sticky top-14 z-10 slam-caption text-center">{ROUND_LABEL[round]}</h2>

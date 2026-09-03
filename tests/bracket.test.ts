@@ -114,6 +114,8 @@ describe("bracket generate around N=86", () => {
     expect(r64).toHaveLength(43);
     expect(byes).toHaveLength(0);
     expect(real).toHaveLength(43);
+    const vacantOpponents = r64.filter((m) => Boolean(m.player1Id) !== Boolean(m.player2Id));
+    expect(vacantOpponents).toHaveLength(0);
     expect(r64.every((m) => !m.winnerId)).toBe(true);
     expect(r64.every((m) => Boolean(m.player1Id && m.player2Id))).toBe(true);
     expect(r64.filter((m) => !matchIsListed(m))).toHaveLength(0);

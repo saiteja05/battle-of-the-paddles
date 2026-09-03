@@ -36,7 +36,7 @@ Local without Docker: `STORE=file OPERATOR_PIN=0909 npm run dev` — same docume
 3. **Check-in** — tap names as people arrive. Huge targets; gold = in the door.
 4. **Freeze & Generate ~6:30** — **Seeded**: Advanced > Intermediate > Beginner/unranked, shuffle *within* band, snake-deal across A/B (even split when N is even — 86 → 44 and 42). Pair 1v1; a bye only if that board is odd. **Chaos shuffle** is fully random order then the same pairing. Re-generate is allowed until the first *real* (non-bye) winner.
 5. **Physical boards** — copy from match slot ids (`A-R64-07`, `B-R8-02`, …). Later-round slots are blank until a tap fills them. Digital twin updates both devices via 1s poll (SSE if the browser keeps the stream).
-6. **Vacant slots and winners** — a one-player R64 shows **No opponent** (not a person named BYE). Tap the real name twice to advance **one** slot into R32. Same two-tap for a real match winner. Nothing auto-cascades into R16/quarters/finals.
+6. **Winners (and the rare real bye)** — even fields have no byes; everyone in round 1 has a human opponent. If N is odd, the leftover highest seed on that board is the only bye — tap their name twice to advance **one** slot. Same two-tap for a real match winner. Nothing auto-cascades into R16/quarters/finals.
 7. **Call to table** on `/now` (two-player matches only). Same `quoteId` is stored on the match so both screens show the same original one-liner.
 8. **Late arrivals** — check them in after freeze; they fill a remaining unplayed odd-count bye so they actually play.
 9. **Finals order** — play **3rd place first** (`FINALS-3RD-01`) while finalists rest, then **Grand Final** (`FINALS-GF-01`). Podium fills from those two matches only — no fake names.
