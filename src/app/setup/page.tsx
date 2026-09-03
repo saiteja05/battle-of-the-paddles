@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { MongoLeaf, VenueChip } from "@/components/Brand";
 import { useEvent } from "@/components/Providers";
 import { competitorsOf, skillLabel } from "@/lib/csv";
 import { hasRealWinner } from "@/lib/bracket";
@@ -69,6 +70,9 @@ export default function SetupPage() {
   return (
     <AppShell>
       <p className="slam-caption">Night-of desk</p>
+      <div className="mt-2">
+        <VenueChip />
+      </div>
       <h1 className="mt-2 font-bangers chromatic text-5xl">Setup / Check-in</h1>
       <p className="mt-2 max-w-3xl font-cond text-lg">
         Import the Luma CSV (typo header is fine). Check people in as they arrive. Freeze & Generate around 6:30. Late
@@ -179,7 +183,14 @@ export default function SetupPage() {
         </div>
         {locked ? <p className="mt-3 font-black text-gold">Locked — a real match already has a winner. Undo it to re-generate.</p> : null}
       </section>
-      {msg ? <p className="mt-4 font-black text-cyanx">{msg}</p> : null}
+      {msg ? (
+        <p className="mt-4 flex flex-wrap items-center gap-2 font-black text-leaf">
+          {/generated|imported|reset complete/i.test(msg) ? (
+            <MongoLeaf className="leaf-stamp h-7 w-4 text-leaf" />
+          ) : null}
+          <span>{msg}</span>
+        </p>
+      ) : null}
     </AppShell>
   );
 }

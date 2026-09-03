@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
+import { BrandLockup, CollabStamp, VenueChip } from "@/components/Brand";
 import { MatchCard } from "@/components/MatchCard";
 import { useEvent } from "@/components/Providers";
 import { playerMap, playerName } from "@/lib/display";
@@ -17,6 +18,12 @@ export default function FinalsPage() {
   return (
     <AppShell>
       <p className="slam-caption">Play 3rd place first</p>
+      <div className="mt-3">
+        <BrandLockup />
+      </div>
+      <div className="mt-2">
+        <VenueChip />
+      </div>
       <h1 className="mt-2 font-bangers chromatic text-5xl">Finals + Podium</h1>
       <p className="mt-2 font-cond text-lg">
         A champ vs B champ for 1st/2nd. A runner-up vs B runner-up for the Quest 3. Run 3rd place while the finalists
@@ -36,6 +43,9 @@ export default function FinalsPage() {
           </div>
           <div className="panel-paper p-4 md:-translate-y-4">
             <p className="slam-caption">1st</p>
+            <div className="mt-1 flex justify-end">
+              <CollabStamp />
+            </div>
             <p className="mt-2 font-bangers text-5xl">{playerName(players, first ?? null)}</p>
             <p className="font-black">{EVENT.prizes.first}</p>
           </div>

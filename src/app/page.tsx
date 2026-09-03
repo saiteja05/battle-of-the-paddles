@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
+import { BrandLockup, VenueChip } from "@/components/Brand";
 import { EVENT } from "@/lib/types";
 import { useEvent } from "@/components/Providers";
 import { competitorsOf } from "@/lib/csv";
 
 const TILES = [
   { href: "/setup", title: "Setup", copy: "Import, check-in, freeze & generate", hue: "bg-crimson text-paper" },
-  { href: "/board/a", title: "Board A", copy: "64-slot visual bracket", hue: "bg-gold text-ink" },
-  { href: "/board/b", title: "Board B", copy: "64-slot visual bracket", hue: "bg-cyanx text-ink" },
+  { href: "/board/a", title: "Board A", copy: "OpenAI ink — black / teal twin", hue: "tile-oa bg-oa-black text-openai" },
+  { href: "/board/b", title: "Board B", copy: "Mongo leaf — forest / spring twin", hue: "tile-mongo bg-evergreen text-leaf" },
   { href: "/now", title: "Now Playing", copy: "Ready + called tables", hue: "bg-mag text-paper" },
   { href: "/finals", title: "Finals", copy: "3rd place, grand final, podium", hue: "bg-paper text-ink" },
-  { href: "/tv", title: "TV Mode", copy: "Read-only display · no emails", hue: "bg-crimson text-gold" },
+  { href: "/tv", title: "TV Mode", copy: "Read-only display · no emails", hue: "bg-forest text-leaf" },
 ];
 
 export default function HubPage() {
@@ -21,8 +22,11 @@ export default function HubPage() {
   const inCount = comps.filter((p) => p.checkedIn).length;
   return (
     <AppShell>
-      <p className="slam-caption">OpenAI × MongoDB</p>
-      <h1 className="mt-3 font-bangers chromatic text-6xl leading-[0.9] sm:text-8xl">{EVENT.name}</h1>
+      <BrandLockup size="lg" />
+      <div className="mt-3">
+        <VenueChip />
+      </div>
+      <h1 className="mt-4 font-bangers chromatic text-6xl leading-[0.9] sm:text-8xl">{EVENT.name}</h1>
       <p className="mt-4 max-w-2xl font-cond text-xl">
         {EVENT.dateLabel} · {EVENT.venue}. 1st {EVENT.prizes.first} · 2nd {EVENT.prizes.second} · 3rd {EVENT.prizes.third}.
       </p>
@@ -34,7 +38,7 @@ export default function HubPage() {
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {TILES.map((t) => (
-          <Link key={t.href} href={t.href} className={`tap panel ${t.hue} min-h-32 p-5`}>
+          <Link key={t.href} href={t.href} className={`tap comic-chrome ${t.hue} min-h-32 p-5`}>
             <h2 className="font-bangers text-4xl">{t.title}</h2>
             <p className="mt-2 font-cond text-lg">{t.copy}</p>
           </Link>

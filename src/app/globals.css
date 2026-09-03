@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --ink: #09070c;
+  --ink: #0d0d0d;
+  --forest: #001e2b;
+  --evergreen: #00684a;
+  --leaf: #00ed64;
+  --openai: #10a37f;
   --paper: #f3e6cf;
   --crimson: #e10600;
   --cyan: #18f0ff;
@@ -17,7 +21,7 @@ body {
 }
 
 body {
-  background: var(--ink);
+  background: var(--forest);
   color: var(--paper);
   font-family: var(--font-archivo-narrow), "Arial Narrow", sans-serif;
 }
@@ -28,11 +32,12 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: 0;
-  opacity: 0.35;
+  opacity: 0.42;
   background:
-    radial-gradient(circle at 20% 10%, rgba(225, 6, 0, 0.35), transparent 36%),
-    radial-gradient(circle at 80% 0%, rgba(24, 240, 255, 0.18), transparent 32%),
-    radial-gradient(circle at 70% 90%, rgba(255, 43, 214, 0.16), transparent 40%),
+    radial-gradient(circle at 18% 8%, rgba(16, 163, 127, 0.38), transparent 34%),
+    radial-gradient(circle at 82% 4%, rgba(0, 237, 100, 0.22), transparent 30%),
+    radial-gradient(circle at 72% 92%, rgba(225, 6, 0, 0.2), transparent 38%),
+    radial-gradient(circle at 8% 78%, rgba(0, 104, 74, 0.45), transparent 42%),
     repeating-radial-gradient(circle at 0 0, #000 0 1px, transparent 1px 5px);
 }
 
@@ -77,17 +82,76 @@ body::after {
   text-transform: uppercase;
 }
 
-.panel {
-  background: linear-gradient(180deg, #1c0b12 0%, #12060a 100%);
+.comic-chrome {
   border: 4px solid #000;
   box-shadow: 8px 8px 0 #000;
+}
+
+.tile-oa {
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--openai);
+}
+
+.tile-mongo {
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--leaf);
+}
+
+.panel {
+  background: linear-gradient(180deg, #023430 0%, #0d0d0d 52%, #001e2b 100%);
+  border: 4px solid #000;
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--leaf);
 }
 
 .panel-paper {
   background: #f7ead3;
   color: #111;
   border: 4px solid #000;
-  box-shadow: 8px 8px 0 #000;
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--openai);
+}
+
+.panel-oa {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+  border: 4px solid #000;
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--openai);
+}
+
+.panel-mongo {
+  background: linear-gradient(180deg, #023430 0%, #001e2b 100%);
+  border: 4px solid #000;
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--leaf);
+}
+
+.universe-a .panel {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--openai);
+}
+
+.universe-a .match-vs {
+  color: var(--openai);
+}
+
+.universe-b .panel {
+  background: linear-gradient(180deg, #023430 0%, #001e2b 100%);
+  box-shadow:
+    8px 8px 0 #000,
+    inset 0 0 0 2px var(--leaf);
+}
+
+.universe-b .match-vs {
+  color: var(--leaf);
 }
 
 .tap {
@@ -112,12 +176,44 @@ body::after {
     4px 4px 0 #000;
 }
 
+.brand-stripe {
+  display: flex;
+  height: 8px;
+  width: 100%;
+  border-bottom: 3px solid #000;
+}
+
+.brand-stripe > span {
+  flex: 1;
+}
+
+.venue-chip {
+  display: inline-block;
+  font-family: var(--font-archivo-black), sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--leaf);
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  padding: 0.35rem 0.7rem;
+}
+
+.leaf-stamp {
+  filter: drop-shadow(2px 2px 0 #000);
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--crimson);
+  background: var(--leaf);
   border: 2px solid #000;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--forest);
 }

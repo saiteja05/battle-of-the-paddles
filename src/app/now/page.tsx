@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
+import { VenueChip } from "@/components/Brand";
 import { MatchCard } from "@/components/MatchCard";
 import { useEvent } from "@/components/Providers";
 import { matchReady } from "@/lib/bracket";
@@ -14,9 +15,12 @@ export default function NowPage() {
   return (
     <AppShell>
       <p className="slam-caption">Call the table</p>
+      <div className="mt-2">
+        <VenueChip />
+      </div>
       <h1 className="mt-2 font-bangers chromatic text-5xl">Now Playing</h1>
       <section className="mt-6">
-        <h2 className="font-black text-2xl text-gold">Called ({called.length})</h2>
+        <h2 className="font-black text-2xl text-openai">Called ({called.length})</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           {called.map((m) => (
             <div key={m.id}>
@@ -28,7 +32,7 @@ export default function NowPage() {
         </div>
       </section>
       <section className="mt-8">
-        <h2 className="font-black text-2xl text-cyanx">Ready ({ready.length})</h2>
+        <h2 className="font-black text-2xl text-leaf">Ready ({ready.length})</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {ready.map((m) => (
             <MatchCard key={m.id} match={m} large showCall />
