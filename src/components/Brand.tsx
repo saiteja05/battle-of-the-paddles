@@ -14,18 +14,18 @@ const LOGO_SIZES = {
   lg: { logo: "h-10 sm:h-12", x: "text-3xl" },
 } as const;
 
-function logoPill(tone: LogoTone) {
-  return tone === "onInk" ? "rounded-md bg-white px-2 py-0.5 shadow-sm" : "";
+function toneClass(tone: LogoTone) {
+  return tone === "onInk" ? "brand-lockup--onInk" : "brand-lockup--onPaper";
 }
 
 /** Official OpenAI wordmark lockup (PNG). */
 export function OpenAiMark({ className = "h-7", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
   return (
-    <span className={`inline-flex items-center ${logoPill(tone)}`}>
+    <span className={`brand-lockup inline-flex items-center ${toneClass(tone)}`}>
       <img
         src={OPENAI_LOGO}
         alt=""
-        className={`brand-lockup__logo w-auto object-contain ${className}`}
+        className={`brand-lockup__logo brand-lockup__logo--openai w-auto object-contain ${className}`}
         aria-hidden
       />
     </span>
@@ -35,11 +35,11 @@ export function OpenAiMark({ className = "h-7", tone = "onInk" }: { className?: 
 /** Official MongoDB wordmark lockup (PNG). */
 export function MongoLeaf({ className = "h-7", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
   return (
-    <span className={`inline-flex items-center ${logoPill(tone)}`}>
+    <span className={`brand-lockup inline-flex items-center ${toneClass(tone)}`}>
       <img
         src={MONGODB_LOGO}
         alt=""
-        className={`brand-lockup__logo w-auto object-contain ${className}`}
+        className={`brand-lockup__logo brand-lockup__logo--mongodb w-auto object-contain ${className}`}
         aria-hidden
       />
     </span>
@@ -72,34 +72,29 @@ export function BrandLockup({
 }) {
   const reduce = useReducedMotion();
   const s = LOGO_SIZES[size];
-  const pill = logoPill(tone);
 
   const content = (
     <div
-      className={`brand-lockup flex items-center gap-2 ${stacked ? "flex-col sm:flex-row" : ""}`}
+      className={`brand-lockup flex items-center gap-2 ${toneClass(tone)} ${stacked ? "flex-col sm:flex-row" : ""}`}
       role="group"
       aria-label="OpenAI times MongoDB"
     >
-      <span className={`inline-flex items-center ${pill}`}>
-        <img
-          src={OPENAI_LOGO}
-          alt="OpenAI"
-          className={`brand-lockup__logo w-auto object-contain ${s.logo}`}
-        />
-      </span>
+      <img
+        src={OPENAI_LOGO}
+        alt="OpenAI"
+        className={`brand-lockup__logo brand-lockup__logo--openai w-auto object-contain ${s.logo}`}
+      />
       <span
         className={`brand-lockup__x font-bangers leading-none ${tone === "onPaper" ? "text-evergreen" : "text-gold"} ${s.x}`}
         aria-hidden
       >
         ×
       </span>
-      <span className={`inline-flex items-center ${pill}`}>
-        <img
-          src={MONGODB_LOGO}
-          alt="MongoDB"
-          className={`brand-lockup__logo w-auto object-contain ${s.logo}`}
-        />
-      </span>
+      <img
+        src={MONGODB_LOGO}
+        alt="MongoDB"
+        className={`brand-lockup__logo brand-lockup__logo--mongodb w-auto object-contain ${s.logo}`}
+      />
     </div>
   );
 

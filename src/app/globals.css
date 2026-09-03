@@ -206,9 +206,22 @@ body::after {
 .brand-lockup__logo {
   display: block;
   flex-shrink: 0;
-  filter: none !important;
   mix-blend-mode: normal;
   text-shadow: none !important;
+}
+
+/* Transparent PNGs on dark ink/forest backgrounds — invert black marks to white */
+.brand-lockup--onInk .brand-lockup__logo--openai {
+  filter: brightness(0) invert(1);
+}
+
+.brand-lockup--onInk .brand-lockup__logo--mongodb {
+  filter: brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(95deg);
+}
+
+/* Light paper panels — use native dark logo colors, no filter */
+.brand-lockup--onPaper .brand-lockup__logo {
+  filter: none;
 }
 
 .brand-lockup__word {
