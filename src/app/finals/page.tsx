@@ -31,17 +31,17 @@ export default function FinalsPage() {
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <div className="panel-paper p-4">
             <p className="slam-caption">2nd</p>
-            <p className="mt-2 font-bangers text-4xl">{playerName(players, second)}</p>
+            <p className="mt-2 font-bangers text-4xl">{playerName(players, second ?? null)}</p>
             <p className="font-black">{EVENT.prizes.second}</p>
           </div>
           <div className="panel-paper p-4 md:-translate-y-4">
             <p className="slam-caption">1st</p>
-            <p className="mt-2 font-bangers text-5xl">{playerName(players, first)}</p>
+            <p className="mt-2 font-bangers text-5xl">{playerName(players, first ?? null)}</p>
             <p className="font-black">{EVENT.prizes.first}</p>
           </div>
           <div className="panel-paper p-4">
             <p className="slam-caption">3rd</p>
-            <p className="mt-2 font-bangers text-4xl">{playerName(players, bronze)}</p>
+            <p className="mt-2 font-bangers text-4xl">{playerName(players, bronze ?? null)}</p>
             <p className="font-black">{EVENT.prizes.third}</p>
           </div>
         </div>
