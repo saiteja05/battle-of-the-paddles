@@ -154,6 +154,14 @@ body::after {
   color: var(--leaf);
 }
 
+.vacant-slot {
+  border: 3px dashed rgba(243, 230, 207, 0.34);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--paper);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .tap {
   min-height: 56px;
   min-width: 56px;

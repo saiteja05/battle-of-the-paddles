@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { matchCanSelectWinner, matchReady } from "@/lib/bracket";
 import type { Match, Player } from "@/lib/types";
-import { playerMap, playerSub, slotName } from "@/lib/display";
+import { byeAdvanceHint, playerMap, playerSub, slotName, vacantOpponentLabel } from "@/lib/display";
 import { MongoLeaf } from "./Brand";
 import { useEvent } from "./Providers";
 
@@ -68,10 +68,24 @@ export function MatchCard({
     }
   }
 
+  function vacantPlate() {
+    return (
+      <div
+        data-slot="vacant"
+        className={`vacant-slot w-full px-3 py-3 text-left ${large ? "min-h-20" : "min-h-14"}`}
+        aria-label={`${vacantOpponentLabel()}. ${byeAdvanceHint(match)}`}
+      >
+        <div className="font-cond text-sm font-semibold tracking-wide text-paper/90">{vacantOpponentLabel()}</div>
+        <div className="mt-0.5 font-cond text-xs leading-snug text-paper/60">{byeAdvanceHint(match)}</div>
+      </div>
+    );
+  }
+
   function slotBtn(player: Player | undefined, id: string | null) {
+    if (!id && match.isBye) return vacantPlate();
     const selected = pending && id && pending === id;
     const won = match.winnerId && id && match.winnerId === id;
-    const label = slotName(players, id, { vacantBye: match.isBye });
+    const label = slotName(players, id);
     return (
       <button
         disabled={!canPick || busy || !id}
@@ -96,12 +110,20 @@ export function MatchCard({
     <article className={`panel relative p-2 ${match.calledAt && !decided ? "ring-4 ring-gold" : ""}`}>
       <div className="mb-1 flex items-center justify-between gap-2">
         <span className="font-black text-gold">{match.id}</span>
-        {match.isBye ? <span className="slam-caption text-xs">BYE</span> : null}
+        {match.isBye ? (
+          <span className="font-cond text-[10px] font-semibold uppercase tracking-[0.14em] text-gold/90">
+            {decided ? "Advanced" : "Advances"}
+          </span>
+        ) : null}
         {match.calledAt && !decided ? <span className="text-xs font-black text-openai">CALLED</span> : null}
       </div>
       <div className="space-y-2">
         {slotBtn(p1, match.player1Id)}
-        <div className="match-vs text-center font-bangers text-lg text-mag">VS</div>
+        {match.isBye ? (
+          <div className="mx-8 border-t border-dashed border-paper/25" aria-hidden />
+        ) : (
+          <div className="match-vs text-center font-bangers text-lg text-mag">VS</div>
+        )}
         {slotBtn(p2, match.player2Id)}
       </div>
       <div className="mt-2 flex flex-wrap gap-2">

@@ -5,7 +5,7 @@ import { WinnerSlam } from "@/components/WinnerSlam";
 import { BrandLockup, BrandStripe, VenueChip } from "@/components/Brand";
 import { useEvent } from "@/components/Providers";
 import { matchReady } from "@/lib/bracket";
-import { playerMap, playerName } from "@/lib/display";
+import { celebrateWinnerName, playerMap, playerName } from "@/lib/display";
 import { quoteById } from "@/lib/quotes";
 import { EVENT } from "@/lib/types";
 
@@ -14,7 +14,7 @@ export default function TvPage() {
   const players = playerMap(event);
   const called = event.matches.filter((m) => m.calledAt && !m.winnerId && !m.isBye);
   const ready = event.matches.filter((m) => matchReady(m)).slice(0, 6);
-  const lastWinner = event.lastEvent?.type === "winner" ? event.lastEvent : null;
+  const lastWinnerName = celebrateWinnerName(players, event.lastEvent);
   const gf = event.matches.find((m) => m.id === "FINALS-GF-01");
 
   return (
@@ -65,11 +65,11 @@ export default function TvPage() {
                 </li>
               ))}
             </ul>
-            {lastWinner ? (
+            {lastWinnerName ? (
               <div className="mt-6 panel-paper p-4">
                 <p className="slam-caption">Last point</p>
-                <p className="mt-2 font-bangers text-4xl">{playerName(players, lastWinner.winnerId ?? null)}</p>
-                <p className="font-black">{lastWinner.matchId}</p>
+                <p className="mt-2 font-bangers text-4xl">{lastWinnerName}</p>
+                <p className="font-black">{event.lastEvent.matchId}</p>
               </div>
             ) : null}
             {gf?.winnerId ? (

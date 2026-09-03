@@ -161,7 +161,7 @@ export default function SetupPage() {
         <h2 className="font-black text-2xl">3. Freeze & Generate</h2>
         <p className="font-cond">
           Writes Round of 64 names only (slot ids like A-R64-07 match the paper sheets). Later rounds stay empty until
-          an operator taps a BYE or a real winner — one next-round slot at a time. Seeded: Advanced → Intermediate →
+          an operator taps the lone player on a vacant slot (or a real winner) — one next-round slot at a time. Seeded: Advanced → Intermediate →
           Beginner/unranked, shuffle within band, snake-deal A/B. Chaos = fully random order then the same placement.
         </p>
         <label className="mt-3 flex items-center gap-2 font-black">

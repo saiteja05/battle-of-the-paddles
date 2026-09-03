@@ -3,23 +3,24 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { BrandLockup, BrandStripe, MongoLeaf, OpenAiMark } from "./Brand";
+import { celebrateWinnerName } from "@/lib/display";
 import { quoteById } from "@/lib/quotes";
 import { useEvent } from "./Providers";
 
 export function WinnerSlam() {
   const { event, slam, dismissSlam } = useEvent();
+  const winnerName = celebrateWinnerName(event.players, slam);
   useEffect(() => {
-    if (!slam) return;
+    if (!slam || !winnerName) return;
     const t = setTimeout(dismissSlam, 1800);
     return () => clearTimeout(t);
-  }, [slam, dismissSlam]);
+  }, [slam, winnerName, dismissSlam]);
 
-  const winner = event.players.find((p) => p.id === slam?.winnerId);
   const quote = quoteById(slam?.quoteId || "q-00");
 
   return (
     <AnimatePresence>
-      {slam ? (
+      {slam && winnerName ? (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-oa-black/80 p-4"
           initial={{ opacity: 0 }}
@@ -39,7 +40,7 @@ export function WinnerSlam() {
                 <BrandLockup size="sm" tone="onPaper" />
               </div>
               <p className="slam-caption">Winner!</p>
-              <h2 className="mt-3 font-bangers chromatic text-6xl leading-none text-crimson">{winner?.name || "CHAMP"}</h2>
+              <h2 className="mt-3 font-bangers chromatic text-6xl leading-none text-crimson">{winnerName}</h2>
               <p className="mt-2 font-black text-xl">{slam.matchId}</p>
               <p className="mt-4 font-cond text-2xl italic">“{quote.text}”</p>
               <div className="mt-4 flex items-end justify-center gap-4">

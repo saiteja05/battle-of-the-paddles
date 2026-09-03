@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   applyWinner,
+  createEmptyTournament,
   generateBracket,
   hasRealWinner,
   placeLatePlayer,
   undoWinner,
 } from "../src/lib/bracket";
+import { celebrateWinnerName } from "../src/lib/display";
+import { applySetWinner } from "../src/lib/ops";
 import { mulberry32 } from "../src/lib/seed";
 import type { Player } from "../src/lib/types";
 
@@ -109,6 +112,24 @@ describe("winner advance + cascade undo", () => {
     expect(r16.player1Id).toBeNull();
     expect(r16.player2Id).toBeNull();
     expect(hasRealWinner(matches)).toBe(false);
+  });
+
+  it("logs a bye tap as type bye so WinnerSlam / TV last-point stay quiet", () => {
+    const players = fakePlayers(86);
+    const { matches } = generateBracket(players, {
+      mode: "seeded",
+      rng: mulberry32(42),
+      seedSalt: 42,
+    });
+    const bye = matches.find((m) => m.round === "R64" && m.isBye && !m.winnerId)!;
+    const winner = bye.player1Id ?? bye.player2Id;
+    const t = createEmptyTournament();
+    t.players = players;
+    t.matches = matches;
+    t.status = "live";
+    const next = applySetWinner(t, bye.id, winner!);
+    expect(next.lastEvent.type).toBe("bye");
+    expect(celebrateWinnerName(next.players, next.lastEvent)).toBeNull();
   });
 
   it("board final fills Grand Final (winner) and 3rd place (loser)", () => {

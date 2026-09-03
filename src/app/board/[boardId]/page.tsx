@@ -29,7 +29,8 @@ export default function BoardPage() {
             ? "Forest ink, leaf stamps — same comic chrome as Board A, different palette."
             : "Near-black panels, teal ink — same comic chrome as Board B, different palette."}{" "}
           Slot numbers match the paper sheets (example <span className="font-black">{boardId}-R64-07</span>). Tap a name
-          once for the gold confirm glow, tap again to commit. Undo cascades.
+          once for the gold confirm glow, tap again to commit. Vacant slots read No opponent — tap the real name, not
+          the empty plate. Undo cascades.
         </p>
         <div className="mt-6">
           <BracketView boardId={boardId} />
