@@ -5,28 +5,45 @@ import { EVENT } from "@/lib/types";
 
 type LogoTone = "onInk" | "onPaper";
 
-function markVariant(tone: LogoTone): { openai: string; mongo: string } {
-  return tone === "onPaper"
-    ? { openai: "/logos/openai-mark-black.svg", mongo: "/logos/mongodb-mark-black.svg" }
-    : { openai: "/logos/openai-mark-white.svg", mongo: "/logos/mongodb-mark-green.svg" };
-}
+const OPENAI_LOGO = "/logos/openai.png";
+const MONGODB_LOGO = "/logos/mongodb.png";
 
 const LOGO_SIZES = {
-  sm: { mark: "h-6 w-6", leaf: "h-7 w-4", word: "text-sm", x: "text-xl" },
-  md: { mark: "h-8 w-8", leaf: "h-9 w-5", word: "text-lg", x: "text-2xl" },
-  lg: { mark: "h-10 w-10", leaf: "h-11 w-7", word: "text-2xl", x: "text-3xl" },
+  sm: { logo: "h-7 sm:h-8", x: "text-xl" },
+  md: { logo: "h-9", x: "text-2xl" },
+  lg: { logo: "h-10 sm:h-12", x: "text-3xl" },
 } as const;
 
-/** Official OpenAI blossom mark (SVG asset). */
-export function OpenAiMark({ className = "h-7 w-7", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
-  const src = tone === "onPaper" ? "/logos/openai-mark-black.svg" : "/logos/openai-mark-white.svg";
-  return <img src={src} alt="" className={className} aria-hidden />;
+function logoPill(tone: LogoTone) {
+  return tone === "onInk" ? "rounded-md bg-white px-2 py-0.5 shadow-sm" : "";
 }
 
-/** Official MongoDB leaf mark (SVG asset). */
-export function MongoLeaf({ className = "h-8 w-5", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
-  const src = tone === "onPaper" ? "/logos/mongodb-mark-black.svg" : "/logos/mongodb-mark-green.svg";
-  return <img src={src} alt="" className={className} aria-hidden />;
+/** Official OpenAI wordmark lockup (PNG). */
+export function OpenAiMark({ className = "h-7", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
+  return (
+    <span className={`inline-flex items-center ${logoPill(tone)}`}>
+      <img
+        src={OPENAI_LOGO}
+        alt=""
+        className={`brand-lockup__logo w-auto object-contain ${className}`}
+        aria-hidden
+      />
+    </span>
+  );
+}
+
+/** Official MongoDB wordmark lockup (PNG). */
+export function MongoLeaf({ className = "h-7", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
+  return (
+    <span className={`inline-flex items-center ${logoPill(tone)}`}>
+      <img
+        src={MONGODB_LOGO}
+        alt=""
+        className={`brand-lockup__logo w-auto object-contain ${className}`}
+        aria-hidden
+      />
+    </span>
+  );
 }
 
 export function BrandStripe() {
@@ -54,9 +71,8 @@ export function BrandLockup({
   animate?: boolean;
 }) {
   const reduce = useReducedMotion();
-  const marks = markVariant(tone);
   const s = LOGO_SIZES[size];
-  const word = tone === "onPaper" ? "text-ink" : "text-paper";
+  const pill = logoPill(tone);
 
   const content = (
     <div
@@ -64,9 +80,12 @@ export function BrandLockup({
       role="group"
       aria-label="OpenAI times MongoDB"
     >
-      <span className="inline-flex items-center gap-1.5">
-        <img src={marks.openai} alt="" className={`brand-lockup__mark ${s.mark}`} aria-hidden />
-        <span className={`brand-lockup__word font-black leading-none tracking-tight ${word} ${s.word}`}>OpenAI</span>
+      <span className={`inline-flex items-center ${pill}`}>
+        <img
+          src={OPENAI_LOGO}
+          alt="OpenAI"
+          className={`brand-lockup__logo w-auto object-contain ${s.logo}`}
+        />
       </span>
       <span
         className={`brand-lockup__x font-bangers leading-none ${tone === "onPaper" ? "text-evergreen" : "text-gold"} ${s.x}`}
@@ -74,9 +93,12 @@ export function BrandLockup({
       >
         ×
       </span>
-      <span className="inline-flex items-center gap-1.5">
-        <img src={marks.mongo} alt="" className={`brand-lockup__mark ${s.leaf}`} aria-hidden />
-        <span className={`brand-lockup__word font-black leading-none tracking-tight ${word} ${s.word}`}>MongoDB</span>
+      <span className={`inline-flex items-center ${pill}`}>
+        <img
+          src={MONGODB_LOGO}
+          alt="MongoDB"
+          className={`brand-lockup__logo w-auto object-contain ${s.logo}`}
+        />
       </span>
     </div>
   );
@@ -158,8 +180,8 @@ export function VenueChip({ className = "", pulse = false }: { className?: strin
 export function CollabStamp({ className = "", tone = "onInk" }: { className?: string; tone?: LogoTone }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`} aria-hidden>
-      <OpenAiMark className="h-5 w-5" tone={tone} />
-      <MongoLeaf className="h-6 w-4" tone={tone} />
+      <OpenAiMark className="h-5" tone={tone} />
+      <MongoLeaf className="h-5" tone={tone} />
     </span>
   );
 }

@@ -92,7 +92,7 @@ export function MatchCard({
             <div className="font-cond text-sm opacity-80">{playerSub(player)}</div>
             {selected ? <div className="mt-1 text-xs">Tap again to CONFIRM</div> : null}
           </div>
-          {won ? <MongoLeaf className="leaf-stamp h-7 w-4 shrink-0" /> : null}
+          {won ? <MongoLeaf className="leaf-stamp h-6 shrink-0" tone="onPaper" /> : null}
         </div>
       </button>
     );

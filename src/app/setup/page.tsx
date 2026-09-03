@@ -190,7 +190,7 @@ export default function SetupPage() {
       {msg ? (
         <p className="mt-4 flex flex-wrap items-center gap-2 font-black text-leaf">
           {/generated|imported|reset complete/i.test(msg) ? (
-            <MongoLeaf className="leaf-stamp h-7 w-4 text-leaf" />
+            <MongoLeaf className="leaf-stamp h-6" tone="onPaper" />
           ) : null}
           <span>{msg}</span>
         </p>
