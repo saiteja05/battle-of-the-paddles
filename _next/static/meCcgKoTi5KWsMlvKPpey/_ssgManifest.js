@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fboard\u002F[boardId]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
