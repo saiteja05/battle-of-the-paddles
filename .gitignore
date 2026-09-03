@@ -10,3 +10,4 @@ data/*.json
 tsconfig.tsbuildinfo
 agent-tools
 battle-of-the-paddles.zip
+*.zip
