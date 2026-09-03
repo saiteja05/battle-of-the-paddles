@@ -1,7 +1,15 @@
 import fs from "fs";
 import path from "path";
 import { describe, expect, it } from "vitest";
-import { applyByeAdvances, generateBracket, makeMatchId, roundSnapshot } from "../src/lib/bracket";
+import {
+  applyByeAdvances,
+  boardRoundSizes,
+  generateBracket,
+  makeMatchId,
+  matchIsListed,
+  playerOnMatch,
+  roundSnapshot,
+} from "../src/lib/bracket";
 import { competitorsOf, importPlayersFromCsv } from "../src/lib/csv";
 import { mulberry32, seedPlacement, snakeDeal } from "../src/lib/seed";
 import type { Player } from "../src/lib/types";
@@ -26,22 +34,56 @@ describe("seed placement + snake split", () => {
     expect(order[3]).toBe(33);
   });
 
-  it("snake-deals Advanced 3 and 3 across A/B", () => {
+  it("snake-deals six items even/even so neither board is odd", () => {
     const adv = ["A1", "A2", "A3", "A4", "A5", "A6"];
     const [a, b] = snakeDeal(adv);
-    expect(a).toEqual(["A1", "A4", "A5"]);
-    expect(b).toEqual(["A2", "A3", "A6"]);
-    expect(a).toHaveLength(3);
-    expect(b).toHaveLength(3);
+    expect(a).toEqual(["A1", "A4", "A5", "A6"]);
+    expect(b).toEqual(["A2", "A3"]);
+    expect(a.length % 2).toBe(0);
+    expect(b.length % 2).toBe(0);
   });
 
-  it("snake-deals 86 into 43/43", () => {
+  it("snake-deals 86 into 44/42 (both even)", () => {
     const items = Array.from({ length: 86 }, (_, i) => i);
     const [a, b] = snakeDeal(items);
-    expect(a).toHaveLength(43);
-    expect(b).toHaveLength(43);
+    expect(a).toHaveLength(44);
+    expect(b).toHaveLength(42);
+    expect(a.length + b.length).toBe(86);
+  });
+
+  it("snake-deals 87 into 43/44 (exactly one odd board)", () => {
+    const items = Array.from({ length: 87 }, (_, i) => i);
+    const [a, b] = snakeDeal(items);
+    expect([a.length, b.length].sort((x, y) => x - y)).toEqual([43, 44]);
+    expect((a.length % 2) + (b.length % 2)).toBe(1);
   });
 });
+
+describe("boardRoundSizes", () => {
+  it("sizes first round to ceil(N/2)", () => {
+    expect(boardRoundSizes(44)).toEqual([22, 11, 6, 3, 2, 1]);
+    expect(boardRoundSizes(42)).toEqual([21, 11, 6, 3, 2, 1]);
+    expect(boardRoundSizes(43)).toEqual([22, 11, 6, 3, 2, 1]);
+    expect(boardRoundSizes(8)).toEqual([4, 2, 1]);
+  });
+});
+
+function extraPlayer(i: number): Player {
+  return {
+    id: `extra-${i}`,
+    name: `Extra ${i}`,
+    firstName: "Extra",
+    lastName: String(i),
+    company: "",
+    jobTitle: "",
+    skill: "beginner",
+    competing: true,
+    checkedIn: true,
+    mergedCount: 1,
+    sourceIds: [],
+    declined: false,
+  };
+}
 
 describe("bracket generate around N=86", () => {
   const players = loadCompetitors();
@@ -50,43 +92,46 @@ describe("bracket generate around N=86", () => {
     expect(players.length).toBe(86);
   });
 
-  it("splits boards, assigns byes to highest seeds, and leaves R32+ empty", () => {
+  it("splits 44/42, pairs everyone 1v1, and leaves later rounds empty", () => {
     const { matches, boardA, boardB } = generateBracket(players, {
       mode: "seeded",
       rng: mulberry32(20260909),
       seedSalt: 20260909,
     });
-    expect(boardA).toHaveLength(43);
-    expect(boardB).toHaveLength(43);
+    expect(boardA).toHaveLength(44);
+    expect(boardB).toHaveLength(42);
 
     const advA = boardA.filter((p) => p.skill === "advanced").length;
     const advB = boardB.filter((p) => p.skill === "advanced").length;
     expect(advA).toBe(3);
     expect(advB).toBe(3);
 
-    for (const board of ["A", "B"] as const) {
-      const r64 = matches.filter((m) => m.boardId === board && m.round === "R64");
-      const byes = r64.filter((m) => m.isBye);
-      const real = r64.filter((m) => !m.isBye && m.player1Id && m.player2Id);
-      expect(r64).toHaveLength(32);
-      expect(byes.length).toBe(21);
-      expect(real.length).toBe(11);
-      expect(64 - boardA.length).toBe(21);
-      expect(r64.every((m) => !m.winnerId)).toBe(true);
-      expect(byes.every((m) => Boolean(m.player1Id) !== Boolean(m.player2Id))).toBe(true);
+    const r64 = matches.filter((m) => m.round === "R64");
+    const byes = r64.filter((m) => m.isBye);
+    const real = r64.filter((m) => !m.isBye && m.player1Id && m.player2Id);
+    expect(r64.filter((m) => m.boardId === "A")).toHaveLength(22);
+    expect(r64.filter((m) => m.boardId === "B")).toHaveLength(21);
+    expect(r64).toHaveLength(43);
+    expect(byes).toHaveLength(0);
+    expect(real).toHaveLength(43);
+    expect(r64.every((m) => !m.winnerId)).toBe(true);
+    expect(r64.every((m) => Boolean(m.player1Id && m.player2Id))).toBe(true);
+    expect(r64.filter((m) => !matchIsListed(m))).toHaveLength(0);
 
+    for (const id of players.map((p) => p.id)) {
+      const home = r64.find((m) => playerOnMatch(m, id));
+      expect(home).toBeTruthy();
+      expect(home!.player1Id && home!.player2Id).toBeTruthy();
+      expect(home!.isBye).toBe(false);
+    }
+
+    for (const board of ["A", "B"] as const) {
       for (const round of ["R32", "R16", "R8", "R4", "R2"] as const) {
         const later = matches.filter((m) => m.boardId === board && m.round === round);
         const names = later.flatMap((m) => [m.player1Id, m.player2Id]).filter(Boolean);
         expect(names).toHaveLength(0);
         expect(later.every((m) => !m.winnerId && !m.isBye)).toBe(true);
       }
-
-      const seed1Match = matches.find((m) => m.id === makeMatchId(board, "R64", 1));
-      expect(seed1Match?.isBye).toBe(true);
-      expect(seed1Match?.player1Id).toBeTruthy();
-      expect(seed1Match?.player2Id).toBeNull();
-      expect(seed1Match?.winnerId).toBeNull();
     }
 
     expect(matches.filter((m) => m.boardId === "FINALS")).toHaveLength(2);
@@ -97,8 +142,9 @@ describe("bracket generate around N=86", () => {
 
     const snap = roundSnapshot(matches);
     expect(snap.R64.namedSlots).toBe(86);
+    expect(snap.R64.matches).toBe(43);
     expect(snap.R64.winners).toBe(0);
-    expect(snap.R64.pendingByes).toBe(42);
+    expect(snap.R64.pendingByes).toBe(0);
     expect(snap.R32.namedSlots).toBe(0);
     expect(snap.R16.namedSlots).toBe(0);
     expect(snap.R8.namedSlots).toBe(0);
@@ -108,15 +154,16 @@ describe("bracket generate around N=86", () => {
     expect(snap["3RD"].namedSlots).toBe(0);
   });
 
-  it("gives highest seeds the byes without copying them into R32", () => {
+  it("puts seed 1 in a real first-round match, not a bye", () => {
     const { matches, boardA } = generateBracket(players, {
       mode: "seeded",
       rng: mulberry32(1),
       seedSalt: 1,
     });
-    const m = matches.find((x) => x.id === "A-R64-01")!;
+    const m = matches.find((x) => x.id === makeMatchId("A", "R64", 1))!;
     expect(m.player1Id).toBe(boardA[0].id);
-    expect(m.isBye).toBe(true);
+    expect(m.player2Id).toBe(boardA[boardA.length - 1].id);
+    expect(m.isBye).toBe(false);
     expect(m.winnerId).toBeNull();
     const next = matches.find((x) => x.id === m.nextMatchId);
     expect(next?.player1Id).toBeNull();
@@ -125,15 +172,47 @@ describe("bracket generate around N=86", () => {
   });
 });
 
+describe("bracket generate around N=87", () => {
+  it("leaves exactly one bye on the odd board", () => {
+    const players = [...loadCompetitors(), extraPlayer(1)];
+    expect(players.length).toBe(87);
+    const { matches, boardA, boardB } = generateBracket(players, {
+      mode: "seeded",
+      rng: mulberry32(20260909),
+      seedSalt: 20260909,
+    });
+    expect([boardA.length, boardB.length].sort((a, b) => a - b)).toEqual([43, 44]);
+    const r64 = matches.filter((m) => m.round === "R64");
+    const byes = r64.filter((m) => m.isBye);
+    const real = r64.filter((m) => m.player1Id && m.player2Id);
+    expect(byes).toHaveLength(1);
+    expect(real).toHaveLength(43);
+    expect(r64).toHaveLength(44);
+    expect(roundSnapshot(matches).R64.pendingByes).toBe(1);
+    expect(roundSnapshot(matches).R64.namedSlots).toBe(87);
+
+    const oddBoard = boardA.length % 2 === 1 ? boardA : boardB;
+    const bye = byes[0];
+    expect(bye.boardId).toBe(oddBoard === boardA ? "A" : "B");
+    expect(bye.player1Id).toBe(oddBoard[0].id);
+    expect(bye.player2Id).toBeNull();
+    expect(bye.winnerId).toBeNull();
+    const next = matches.find((x) => x.id === bye.nextMatchId);
+    expect(next?.player1Id).toBeNull();
+    expect(next?.player2Id).toBeNull();
+  });
+});
+
 describe("markByeMatches", () => {
-  it("flags R64 byes but does not auto-win or fill later rounds", () => {
+  it("does not auto-win or fill later rounds for an even field", () => {
     const { matches } = generateBracket(loadCompetitors(), {
       mode: "seeded",
       rng: mulberry32(9),
       seedSalt: 9,
     });
     const real = matches.filter((m) => m.player1Id && m.player2Id && m.round === "R64");
-    expect(real.length).toBeGreaterThan(0);
+    expect(real.length).toBe(43);
+    expect(matches.filter((m) => m.round === "R64" && m.isBye)).toHaveLength(0);
     expect(real.every((m) => !m.winnerId)).toBe(true);
     applyByeAdvances(matches);
     expect(real.every((m) => !m.winnerId)).toBe(true);

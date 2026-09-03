@@ -90,6 +90,7 @@ export interface ImportStats {
 
 export const BOARD_ROUNDS: RoundId[] = ["R64", "R32", "R16", "R8", "R4", "R2"];
 
+/** Ceiling sizes for a full 64-player visual board. Generate uses `boardRoundSizes` instead. */
 export const MATCHES_PER_ROUND: Record<string, number> = {
   R64: 32,
   R32: 16,

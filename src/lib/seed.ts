@@ -40,12 +40,22 @@ export function seedPlacement(size: number): number[] {
   return seeds;
 }
 
+/**
+ * Snake-deal across boards A/B (A, B, B, A, …). When total N is even, both
+ * boards get even counts so nobody sits out — N ≡ 2 (mod 4) would otherwise
+ * yield odd/odd (86 → 43/43). Shift the last B player onto A (86 → 44/42).
+ * Odd N leaves exactly one board odd → one real bye for the event.
+ */
 export function snakeDeal<T>(items: T[]): [T[], T[]] {
   const a: T[] = [];
   const b: T[] = [];
   for (let i = 0; i < items.length; i++) {
     const dest = i % 4 === 0 || i % 4 === 3 ? a : b;
     dest.push(items[i]);
+  }
+  if (items.length % 2 === 0 && a.length % 2 === 1) {
+    const moved = b.pop();
+    if (moved !== undefined) a.push(moved);
   }
   return [a, b];
 }

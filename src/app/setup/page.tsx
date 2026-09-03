@@ -76,7 +76,7 @@ export default function SetupPage() {
       <h1 className="mt-2 font-bangers chromatic text-5xl">Setup / Check-in</h1>
       <p className="mt-2 max-w-3xl font-cond text-lg">
         Import the Luma CSV (typo header is fine). Check people in as they arrive. Freeze & Generate around 6:30. Late
-        arrivals drop into remaining BYE slots.
+        arrivals fill a remaining odd-count bye if one exists.
       </p>
 
       <section className="panel mt-6 p-4">
@@ -160,9 +160,10 @@ export default function SetupPage() {
       <section className="panel mt-6 p-4">
         <h2 className="font-black text-2xl">3. Freeze & Generate</h2>
         <p className="font-cond">
-          Writes Round of 64 names only (slot ids like A-R64-07 match the paper sheets). Later rounds stay empty until
-          an operator taps the lone player on a vacant slot (or a real winner) — one next-round slot at a time. Seeded: Advanced → Intermediate →
-          Beginner/unranked, shuffle within band, snake-deal A/B. Chaos = fully random order then the same placement.
+          Pairs every competing player 1v1 (a bye only if that board has an odd count). First-round slot ids like{" "}
+          A-R64-07. Later rounds stay empty until an operator taps a winner — or the one real bye when N is odd. Seeded:
+          Advanced → Intermediate → Beginner/unranked, shuffle within band, snake-deal A/B (even split when N is even).
+          Chaos = fully random order then the same pairing.
         </p>
         <label className="mt-3 flex items-center gap-2 font-black">
           <input type="checkbox" checked={includeUnchecked} onChange={(e) => setIncludeUnchecked(e.target.checked)} />

@@ -1,7 +1,7 @@
 import type { BoardId, Match, Player, RoundId, Tournament } from "./types";
-import { BOARD_ROUNDS, EVENT, MATCHES_PER_ROUND, NEXT_ROUND, TOURNAMENT_ID } from "./types";
+import { BOARD_ROUNDS, EVENT, TOURNAMENT_ID } from "./types";
 import { quoteIdFor } from "./quotes";
-import { rankForSeeding, seedPlacement, snakeDeal, type Rng } from "./seed";
+import { rankForSeeding, snakeDeal, type Rng } from "./seed";
 
 export function padSlot(slot: number): string {
   return String(slot).padStart(2, "0");
@@ -39,12 +39,38 @@ function emptyMatch(partial: {
   };
 }
 
-export function createBoardMatches(boardId: "A" | "B"): Match[] {
+/**
+ * Match counts per round for `playerCount` people, pairing everyone 1v1 and
+ * adding a bye match only when the entering count is odd.
+ * 44 → [22, 11, 6, 3, 2, 1]; 42 → [21, 11, 6, 3, 2, 1]; 8 → [4, 2, 1].
+ */
+export function boardRoundSizes(playerCount: number): number[] {
+  if (playerCount <= 0) return [];
+  if (playerCount === 1) return [1];
+  const sizes: number[] = [];
+  let n = playerCount;
+  while (n > 1) {
+    const matches = Math.ceil(n / 2);
+    sizes.push(matches);
+    n = matches;
+  }
+  if (sizes.length > BOARD_ROUNDS.length) {
+    throw new Error(
+      `Need ${sizes.length} rounds for ${playerCount} players; max is ${BOARD_ROUNDS.length} (64 per board)`,
+    );
+  }
+  return sizes;
+}
+
+export function createBoardMatches(boardId: "A" | "B", playerCount: number): Match[] {
+  const sizes = boardRoundSizes(playerCount);
   const matches: Match[] = [];
-  for (const round of BOARD_ROUNDS) {
-    const count = MATCHES_PER_ROUND[round];
+  for (let r = 0; r < sizes.length; r++) {
+    const round = BOARD_ROUNDS[r];
+    const count = sizes[r];
+    const isLast = r === sizes.length - 1;
     for (let slot = 1; slot <= count; slot++) {
-      if (round === "R2") {
+      if (isLast) {
         matches.push(
           emptyMatch({
             boardId,
@@ -57,7 +83,7 @@ export function createBoardMatches(boardId: "A" | "B"): Match[] {
           }),
         );
       } else {
-        const nextRound = NEXT_ROUND[round];
+        const nextRound = BOARD_ROUNDS[r + 1];
         matches.push(
           emptyMatch({
             boardId,
@@ -93,21 +119,40 @@ export function createFinalsMatches(): Match[] {
 }
 
 export function emptyBracket(): Match[] {
-  return [...createBoardMatches("A"), ...createBoardMatches("B"), ...createFinalsMatches()];
+  return [...createFinalsMatches()];
+}
+
+/** Highest seed sits out when N is odd; remaining fold 1vN, 2vN-1, … */
+export function foldPairs(ranked: Player[]): [string, string | null][] {
+  const ids = ranked.map((p) => p.id);
+  const pairs: [string, string | null][] = [];
+  if (ids.length % 2 === 1) {
+    const bye = ids.shift();
+    if (bye) pairs.push([bye, null]);
+  }
+  let i = 0;
+  let j = ids.length - 1;
+  while (i < j) {
+    pairs.push([ids[i], ids[j]]);
+    i += 1;
+    j -= 1;
+  }
+  return pairs;
 }
 
 export function placePlayersOnBoard(matches: Match[], boardId: "A" | "B", ranked: Player[]): void {
-  const order = seedPlacement(64);
-  const r64 = matches.filter((m) => m.boardId === boardId && m.round === "R64");
-  const bySlot = new Map(r64.map((m) => [m.slot, m]));
-  for (let pos = 0; pos < 64; pos++) {
-    const seed = order[pos];
-    const player = ranked[seed - 1];
-    const slot = Math.floor(pos / 2) + 1;
-    const match = bySlot.get(slot);
-    if (!match) continue;
-    if (pos % 2 === 0) match.player1Id = player?.id ?? null;
-    else match.player2Id = player?.id ?? null;
+  const firstRound = matches
+    .filter((m) => m.boardId === boardId && m.round === "R64")
+    .sort((a, b) => a.slot - b.slot);
+  const pairs = foldPairs(ranked);
+  if (pairs.length !== firstRound.length) {
+    throw new Error(
+      `Board ${boardId}: ${ranked.length} players need ${pairs.length} first-round matches, found ${firstRound.length}`,
+    );
+  }
+  for (let i = 0; i < pairs.length; i++) {
+    firstRound[i].player1Id = pairs[i][0];
+    firstRound[i].player2Id = pairs[i][1];
   }
 }
 
@@ -163,7 +208,11 @@ export function generateBracket(
 ): { matches: Match[]; boardA: Player[]; boardB: Player[] } {
   const ranked = rankForSeeding(players, opts.mode, opts.rng);
   const [boardA, boardB] = snakeDeal(ranked);
-  const matches = emptyBracket();
+  const matches = [
+    ...createBoardMatches("A", boardA.length),
+    ...createBoardMatches("B", boardB.length),
+    ...createFinalsMatches(),
+  ];
   placePlayersOnBoard(matches, "A", boardA);
   placePlayersOnBoard(matches, "B", boardB);
   markByeMatches(matches);
@@ -282,6 +331,12 @@ export function matchCanSelectWinner(m: Match): boolean {
 
 export function boardOf(matches: Match[], boardId: BoardId): Match[] {
   return matches.filter((m) => m.boardId === boardId);
+}
+
+/** First-round real matches (and a true odd-N bye). Empty later-round holes stay hidden. */
+export function matchIsListed(m: Match): boolean {
+  if (m.isBye) return true;
+  return Boolean(m.player1Id || m.player2Id || m.winnerId);
 }
 
 export type RoundSnapshot = {

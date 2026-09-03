@@ -92,8 +92,8 @@ describe("winner advance + cascade undo", () => {
     expect(r16Names[0]).toBe(r32.player1Id);
   });
 
-  it("tapping an R64 bye fills only the immediate R32 slot", () => {
-    const { matches } = generateBracket(fakePlayers(86), {
+  it("tapping an R64 bye fills only the immediate next-round slot", () => {
+    const { matches } = generateBracket(fakePlayers(87), {
       mode: "seeded",
       rng: mulberry32(42),
       seedSalt: 42,
@@ -104,18 +104,18 @@ describe("winner advance + cascade undo", () => {
     applyWinner(matches, bye.id, winner!);
     expect(bye.winnerId).toBe(winner);
     expect(bye.isBye).toBe(true);
-    const r32 = matches.find((m) => m.id === bye.nextMatchId)!;
-    if (bye.nextSlot === 1) expect(r32.player1Id).toBe(winner);
-    else expect(r32.player2Id).toBe(winner);
-    expect(r32.winnerId).toBeNull();
-    const r16 = matches.find((m) => m.id === r32.nextMatchId)!;
-    expect(r16.player1Id).toBeNull();
-    expect(r16.player2Id).toBeNull();
+    const next = matches.find((m) => m.id === bye.nextMatchId)!;
+    if (bye.nextSlot === 1) expect(next.player1Id).toBe(winner);
+    else expect(next.player2Id).toBe(winner);
+    expect(next.winnerId).toBeNull();
+    const after = matches.find((m) => m.id === next.nextMatchId)!;
+    expect(after.player1Id).toBeNull();
+    expect(after.player2Id).toBeNull();
     expect(hasRealWinner(matches)).toBe(false);
   });
 
   it("logs a bye tap as type bye so WinnerSlam / TV last-point stay quiet", () => {
-    const players = fakePlayers(86);
+    const players = fakePlayers(87);
     const { matches } = generateBracket(players, {
       mode: "seeded",
       rng: mulberry32(42),
@@ -138,12 +138,13 @@ describe("winner advance + cascade undo", () => {
       rng: mulberry32(7),
       seedSalt: 7,
     });
-    const boardFinal = matches.find((m) => m.id === "A-R2-01")!;
+    const boardFinal = matches.find((m) => m.boardId === "A" && m.nextMatchId === "FINALS-GF-01")!;
+    expect(boardFinal).toBeTruthy();
     boardFinal.player1Id = "p-1";
     boardFinal.player2Id = "p-2";
     boardFinal.winnerId = null;
     boardFinal.isBye = false;
-    applyWinner(matches, "A-R2-01", "p-1");
+    applyWinner(matches, boardFinal.id, "p-1");
     const gf = matches.find((m) => m.id === "FINALS-GF-01")!;
     const third = matches.find((m) => m.id === "FINALS-3RD-01")!;
     expect(gf.player1Id).toBe("p-1");
@@ -172,8 +173,8 @@ describe("winner advance + cascade undo", () => {
     else expect(childAfter.player2Id).toBeNull();
   });
 
-  it("late arrival consumes a remaining unplayed BYE slot", () => {
-    const { matches } = generateBracket(fakePlayers(40), {
+  it("late arrival consumes a remaining unplayed odd-N bye", () => {
+    const { matches } = generateBracket(fakePlayers(41), {
       mode: "seeded",
       rng: mulberry32(11),
       seedSalt: 11,
