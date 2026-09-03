@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:pages": "NEXT_PUBLIC_STATIC_HOSTING=1 NEXT_PUBLIC_BASE_PATH= NEXT_PUBLIC_OPERATOR_PIN=0909 next build",
+    "build:pages": "bash scripts/build-pages.sh",
     "start": "next start",
     "start:local": "bash scripts/start-local.sh",
     "lint": "next lint",
