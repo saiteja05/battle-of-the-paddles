@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { BattleTitle, BrandLockup, BrandStripe, VenueChip } from "./Brand";
 import { useEvent } from "./Providers";
+import { expectedPinPublic, isStaticHosting } from "@/lib/static-mode";
 
 export function PinGate({ children }: { children: React.ReactNode }) {
   const path = usePathname();
@@ -17,6 +18,14 @@ export function PinGate({ children }: { children: React.ReactNode }) {
 
   async function submit(pin: string) {
     setErr("");
+    if (isStaticHosting) {
+      if (pin.trim() === expectedPinPublic()) setAuthed(true);
+      else {
+        setErr("WRONG PIN — try again, hero.");
+        setDigits("");
+      }
+      return;
+    }
     const r = await fetch("/api/auth", {
       method: "POST",
       headers: { "content-type": "application/json" },

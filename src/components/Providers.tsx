@@ -3,6 +3,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { LastEvent, Tournament } from "@/lib/types";
 import { createEmptyTournament } from "@/lib/bracket";
+import { clientPost } from "@/lib/client-api";
+import { loadClientTournament, subscribeClientTournament } from "@/lib/client-store";
+import { AUTH_KEY, isStaticHosting } from "@/lib/static-mode";
 
 type EventCtx = {
   event: Tournament;
@@ -13,6 +16,7 @@ type EventCtx = {
   authed: boolean;
   setAuthed: (v: boolean) => void;
   post: (url: string, body?: unknown) => Promise<{ event?: Tournament; error?: string }>;
+  staticMode: boolean;
 };
 
 const Ctx = createContext<EventCtx | null>(null);
@@ -27,7 +31,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [event, setEvent] = useState<Tournament>(createEmptyTournament());
   const [offline, setOffline] = useState(false);
   const [slam, setSlam] = useState<LastEvent | null>(null);
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthedState] = useState(false);
   const rev = useRef(-1);
 
   const apply = useCallback((data: Tournament) => {
@@ -40,7 +44,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const setAuthed = useCallback((v: boolean) => {
+    setAuthedState(v);
+    if (isStaticHosting && typeof window !== "undefined") {
+      if (v) sessionStorage.setItem(AUTH_KEY, "1");
+      else sessionStorage.removeItem(AUTH_KEY);
+    }
+  }, []);
+
   const refresh = useCallback(async () => {
+    if (isStaticHosting) {
+      apply(loadClientTournament());
+      setOffline(false);
+      return;
+    }
     try {
       const r = await fetch("/api/event", { cache: "no-store" });
       if (!r.ok) throw new Error("poll failed");
@@ -53,14 +70,26 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, [apply]);
 
   useEffect(() => {
+    if (isStaticHosting) {
+      apply(loadClientTournament());
+      setAuthedState(sessionStorage.getItem(AUTH_KEY) === "1");
+      return subscribeClientTournament((t) => {
+        apply(t);
+        setOffline(false);
+      });
+    }
     void fetch("/api/auth")
       .then((r) => r.json())
-      .then((d) => setAuthed(Boolean(d.ok)))
-      .catch(() => setAuthed(false));
-  }, []);
+      .then((d) => setAuthedState(Boolean(d.ok)))
+      .catch(() => setAuthedState(false));
+  }, [apply]);
 
   useEffect(() => {
     void refresh();
+    if (isStaticHosting) {
+      const iv = setInterval(() => void refresh(), 1000);
+      return () => clearInterval(iv);
+    }
     const iv = setInterval(() => void refresh(), 1000);
     let es: EventSource | null = null;
     try {
@@ -84,6 +113,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   const post = useCallback(
     async (url: string, body?: unknown) => {
+      if (isStaticHosting) {
+        const data = await clientPost(url, body);
+        if (data.event) apply(data.event);
+        if (data.error) throw new Error(data.error);
+        return data;
+      }
       const r = await fetch(url, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -107,8 +142,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       authed,
       setAuthed,
       post,
+      staticMode: isStaticHosting,
     }),
-    [event, offline, slam, refresh, authed, post],
+    [event, offline, slam, refresh, authed, setAuthed, post],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

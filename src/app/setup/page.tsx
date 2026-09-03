@@ -8,7 +8,7 @@ import { competitorsOf, skillLabel } from "@/lib/csv";
 import { hasRealWinner } from "@/lib/bracket";
 
 export default function SetupPage() {
-  const { event, post } = useEvent();
+  const { event, post, staticMode } = useEvent();
   const [q, setQ] = useState("");
   const [includeUnchecked, setIncludeUnchecked] = useState(false);
   const [msg, setMsg] = useState("");
@@ -29,12 +29,22 @@ export default function SetupPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const r = await fetch("/api/players/import", { method: "POST", body: fd });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || "import failed");
-      setMsg(
-        `Imported ${data.stats.uniqueCompetitors} unique competitors · ${data.stats.duplicatesMerged} merged · ${data.stats.declinedSkipped} declined skipped`,
-      );
+      if (staticMode) {
+        const data = await post("/api/players/import", fd);
+        const stats = data.event?.importStats;
+        setMsg(
+          stats
+            ? `Imported ${stats.uniqueCompetitors} unique competitors · ${stats.duplicatesMerged} merged · ${stats.declinedSkipped} declined skipped`
+            : "Imported.",
+        );
+      } else {
+        const r = await fetch("/api/players/import", { method: "POST", body: fd });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "import failed");
+        setMsg(
+          `Imported ${data.stats.uniqueCompetitors} unique competitors · ${data.stats.duplicatesMerged} merged · ${data.stats.declinedSkipped} declined skipped`,
+        );
+      }
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "import failed");
     } finally {
