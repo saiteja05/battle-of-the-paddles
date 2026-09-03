@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { matchCanSelectWinner, matchReady } from "@/lib/bracket";
 import type { Match, Player } from "@/lib/types";
 import { playerMap, playerName, playerSub } from "@/lib/display";
 import { MongoLeaf } from "./Brand";
@@ -25,8 +24,7 @@ export function MatchCard({
   const p1 = match.player1Id ? players.get(match.player1Id) : undefined;
   const p2 = match.player2Id ? players.get(match.player2Id) : undefined;
   const decided = Boolean(match.winnerId);
-  const ready = matchReady(match);
-  const canPick = matchCanSelectWinner(match);
+  const ready = Boolean(match.player1Id && match.player2Id && !match.winnerId && !match.isBye);
 
   async function commit(winnerId: string) {
     if (pending !== winnerId) {
@@ -73,7 +71,7 @@ export function MatchCard({
     const won = match.winnerId && id && match.winnerId === id;
     return (
       <button
-        disabled={!canPick || busy || !id}
+        disabled={!ready || busy || !id}
         onClick={() => id && commit(id)}
         className={`tap w-full px-3 py-3 text-left ${
           won ? "bg-gold text-ink" : selected ? "confirm-glow bg-crimson text-paper" : "bg-paper text-ink"
@@ -81,7 +79,7 @@ export function MatchCard({
       >
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="font-black leading-tight">{!id && match.isBye ? "BYE" : playerName(players, id)}</div>
+            <div className="font-black leading-tight">{playerName(players, id)}</div>
             <div className="font-cond text-sm opacity-80">{playerSub(player)}</div>
             {selected ? <div className="mt-1 text-xs">Tap again to CONFIRM</div> : null}
           </div>
@@ -109,7 +107,7 @@ export function MatchCard({
             Call to table
           </button>
         ) : null}
-        {decided ? (
+        {decided && !match.isBye ? (
           <button className="tap bg-paper px-3 text-ink text-xs" disabled={busy} onClick={() => void undo()}>
             Undo
           </button>
