@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { WinnerSlam } from "@/components/WinnerSlam";
 import { BrandLockup, BrandStripe, VenueChip } from "@/components/Brand";
@@ -19,6 +20,12 @@ export default function TvPage() {
 
   return (
     <div className="min-h-screen">
+      <Link
+        href="/"
+        className="tap fixed left-4 top-4 z-40 bg-forest px-4 py-2 font-black text-leaf"
+      >
+        ← Hub
+      </Link>
       <BrandStripe />
       <div className="p-6">
         <OfflineBanner />
