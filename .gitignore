@@ -9,3 +9,4 @@ data/*.json
 .DS_Store
 tsconfig.tsbuildinfo
 agent-tools
+battle-of-the-paddles.zip
