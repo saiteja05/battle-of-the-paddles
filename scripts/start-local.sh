@@ -9,7 +9,7 @@ export OPERATOR_PIN="${OPERATOR_PIN:-0909}"
 HOST="${HOST:-0.0.0.0}"
 PORT="${PORT:-3000}"
 
-echo "==> Stopping stale Next.js / tunnel processes on port ${PORT}..."
+echo "==> Stopping stale Next.js processes on port ${PORT}..."
 pkill -f 'next dev' 2>/dev/null || true
 pkill -f 'next start' 2>/dev/null || true
 if command -v fuser >/dev/null 2>&1; then

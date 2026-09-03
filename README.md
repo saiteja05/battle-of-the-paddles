@@ -4,29 +4,25 @@ OpenAI × MongoDB table tennis tournament — **Wed Sep 9 2026**, SPIN San Franc
 
 Prizes: **1st NVIDIA RTX 5080** · **2nd Nintendo Switch 2** · **3rd Meta Quest 3**.
 
-Two single-elim boards (A / B) with production pairing — everyone plays unless that board has an odd count — then Grand Final (A champ vs B champ) and 3rd place (runners-up, Quest 3).
+## Run locally (start here)
+
+**→ [LOCAL_SETUP.md](./LOCAL_SETUP.md)** — copy-paste steps for Mac, Linux, and Windows. No VM, no tunnels, no Docker, no Mongo required.
+
+```bash
+npm install
+cp .env.example .env
+npm run dev
+# open http://localhost:3000  PIN 0909
+```
+
+Tournament state lives in `data/tournament.json` (`STORE=file` by default).
 
 Night-of ops: **two physical boards, two operators**, same PIN. Generate writes **first-round names only** (`ceil(N/2)` matches, not a padded 64). Later rounds stay empty until someone taps a winner (or the one real odd-N bye) — one next-round slot at a time. No skip-to-finals, auto-win, or prefilled podium.
 
-## Run locally
-
-```bash
-cp .env.example .env
-# preferred at the venue (Atlas) and locally:
-docker compose up -d
-npm install
-npm test
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). Operator PIN defaults to **`0909`**.
-
-Local without Docker: `STORE=file OPERATOR_PIN=0909 npm run dev` — same document shape, file fallback only.
-
 ### Datastore
 
-- **Preferred (venue):** MongoDB / Atlas via `MONGODB_URI`. One document in `tournaments` with `_id: "battle-of-the-paddles"`. `STORE=auto` (default) tries Mongo first.
-- **Fallback:** if Mongo is unreachable, the API writes `data/tournament.json` with the same document. Force it with `STORE=file`. `STORE=mongo` fails instead of falling back.
+- **Default (local):** `STORE=file` writes `data/tournament.json`. Works offline on one machine.
+- **Optional (multi-device):** MongoDB / Atlas via `MONGODB_URI` with `STORE=mongo`. One document in `tournaments` with `_id: "battle-of-the-paddles"`.
 - Emails are never stored or rendered. Public/TV views only show names.
 
 ## Day-of runbook (SPIN)
@@ -70,4 +66,4 @@ Vitest covers Luma CSV columns, duplicate merge, declined skip, first-round-only
 
 ## Stack
 
-Next.js 15 App Router, TypeScript, Tailwind, Framer Motion, MongoDB Node driver (no Mongoose). PWA manifest at `/manifest.json`. Fonts: Bangers, Archivo Black, Archivo Narrow.
+Next.js 15 App Router, TypeScript, Tailwind, Framer Motion, MongoDB Node driver (optional; file store default). PWA manifest at `/manifest.json`. Fonts: Bangers, Archivo Black, Archivo Narrow.

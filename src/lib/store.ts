@@ -120,18 +120,18 @@ let cached: Promise<Store> | null = null;
 export async function getStore(): Promise<Store> {
   if (!cached) {
     cached = (async () => {
-      const mode = (process.env.STORE || "auto").toLowerCase();
+      const mode = (process.env.STORE || "file").toLowerCase();
       if (mode === "file") {
-        console.log("[store] file backend (STORE=file) — fallback only");
+        console.log(`[store] file backend · ${FILE_PATH}`);
         return fileStore();
       }
-      if (mode !== "mongo") {
+      if (mode === "auto") {
         const mongo = await tryMongo();
         if (mongo) {
           console.log(`[store] mongo backend · ${COLLECTION}._id=${TOURNAMENT_ID}`);
           return mongo;
         }
-        console.log("[store] mongo unavailable — falling back to data/tournament.json");
+        console.log(`[store] mongo unavailable — falling back to ${FILE_PATH}`);
         return fileStore();
       }
       const mongo = await tryMongo();
