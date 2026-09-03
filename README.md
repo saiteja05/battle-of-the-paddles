@@ -1,16 +1,8 @@
 # Battle of the Paddles
 
-OpenAI × MongoDB table tennis tournament bracket for **Battle of the Paddles** at SPIN San Francisco.
+Upload a CSV → run the bracket. **No database required.**
 
-## Live site (GitHub Pages)
-
-**https://saiteja05.github.io/battle-of-the-paddles/**
-
-PIN: **`0909`**
-
-Data is stored in your browser (`localStorage`). Same device / same browser tabs stay in sync. For two phones at the venue, use the **Node server** deploy below instead.
-
-## Run locally (full server — two-phone sync)
+## Quick start (your Mac)
 
 ```bash
 npm install
@@ -18,7 +10,19 @@ cp .env.example .env
 npm run dev
 ```
 
-Open http://localhost:3000 — PIN `0909`. Uses `data/tournament.json` on disk.
+Open http://localhost:3000 — PIN **`0909`**
+
+1. **Setup** — upload the Luma registration CSV
+2. **Board A / B** — tap winners after each game
+3. **Now** — see who plays next
+
+Your tournament state is saved to **`data/tournament.json`** on your machine. No MongoDB, no cloud DB, no connection strings.
+
+## GitHub Pages (optional)
+
+Static site at **https://saiteja05.github.io/battle-of-the-paddles/** — same app, data stays in your browser (`localStorage`). Good for a demo; for event night with two phones, use `npm run dev` above instead.
+
+See [GITHUB_PAGES.md](./GITHUB_PAGES.md) to deploy.
 
 ## GitHub Pages deploy
 

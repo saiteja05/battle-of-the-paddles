@@ -1,8 +1,20 @@
-# Battle of the Paddles — Run on Your Machine
+# Battle of the Paddles — run on your laptop
 
-Run the tournament app **locally on your laptop**. No VM, no tunnels, no Docker, no MongoDB required for event night.
+**No database. No Docker. No MongoDB.**
 
-Tournament data is saved to `data/tournament.json` on disk — works fully offline.
+1. Upload your Luma CSV in **Setup**
+2. Check people in, generate the bracket
+3. Tap winners on **Board A / B**
+
+Data is saved automatically to a file on disk (`data/tournament.json`). You never connect to a database unless you explicitly choose to later.
+
+```bash
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Open http://localhost:3000 — PIN **`0909`**
 
 ## Get the code first
 
