@@ -8,7 +8,30 @@ Your code folder (use the one that contains `package.json`):
 cd /Users/teja.boddapati/Downloads/battle-of-the-paddles/battle-of-the-paddles
 ```
 
-## Quick setup
+## Push blocked by 100MB file?
+
+You probably committed **`node_modules/`** or **`.next/`**. Fix:
+
+```bash
+chmod +x scripts/fix-github-push.sh
+./scripts/fix-github-push.sh
+git commit -m "Remove node_modules and build artifacts from git"
+git push -u origin main
+```
+
+If push still fails, start fresh (repo never pushed successfully):
+
+```bash
+rm -rf .git
+git init -b main
+git remote add origin https://github.com/saiteja05/battle-of-the-paddles.git
+git add -A
+git status   # must NOT list node_modules or .next
+git commit -m "Battle of the Paddles tournament app"
+git push -u origin main
+```
+
+**Never commit:** `node_modules/`, `.next/`, `out/`, `.env`, `*.zip`
 
 ```bash
 chmod +x scripts/init-github.sh

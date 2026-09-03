@@ -1,13 +1,37 @@
-node_modules
-.next
-out
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Env & secrets
 .env
 .env.local
+.env.*.local
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tournament data (local only — import CSV each time)
 data/*.json
 !data/.gitkeep
-.DS_Store
+
+# Build / cache
 tsconfig.tsbuildinfo
-agent-tools
-battle-of-the-paddles.zip
+.vercel
+
+# Archives (never commit zips)
 *.zip
+battle-of-the-paddles*.zip
+
+# Agent / local tooling
+agent-tools/
+
+# Playwright browsers (if downloaded)
+.playwright/
