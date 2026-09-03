@@ -1,4 +1,5 @@
 import { requireOperator } from "@/lib/auth";
+import { roundSnapshot } from "@/lib/bracket";
 import { errorResponse, json } from "@/lib/http";
 import { applyGenerate } from "@/lib/ops";
 import { getStore } from "@/lib/store";
@@ -19,7 +20,11 @@ export async function POST(req: Request) {
         includeUnchecked: Boolean(body.includeUnchecked),
       }),
     );
-    return json({ event });
+    return json({
+      event,
+      store: store.backend,
+      rounds: roundSnapshot(event.matches),
+    });
   } catch (err) {
     return errorResponse(err);
   }

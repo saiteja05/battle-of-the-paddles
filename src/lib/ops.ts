@@ -105,7 +105,7 @@ export function applySetWinner(t: Tournament, matchId: string, winnerId: string)
   if (gf?.winnerId) t.status = "complete";
   else t.status = "live";
   return bump(t, {
-    type: "winner",
+    type: match.isBye ? "bye" : "winner",
     at: new Date().toISOString(),
     matchId,
     winnerId,
@@ -116,9 +116,6 @@ export function applySetWinner(t: Tournament, matchId: string, winnerId: string)
 export function applyUndo(t: Tournament, matchId: string): Tournament {
   const match = t.matches.find((m) => m.id === matchId);
   if (!match) throw new Error(`Unknown match ${matchId}`);
-  if (match.isBye && match.winnerId && !(match.player1Id && match.player2Id)) {
-    throw new Error("Cannot undo an automatic BYE");
-  }
   undoWinner(t.matches, matchId);
   if (t.status === "complete") t.status = "live";
   return bump(t, { type: "undo", at: new Date().toISOString(), matchId });

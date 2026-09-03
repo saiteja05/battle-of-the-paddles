@@ -160,12 +160,13 @@ export default function SetupPage() {
       <section className="panel mt-6 p-4">
         <h2 className="font-black text-2xl">3. Freeze & Generate</h2>
         <p className="font-cond">
-          Default seeding: Advanced → Intermediate → Beginner/unranked, shuffle within band, snake-deal A/B. Chaos =
-          fully random order then the same placement.
+          Writes Round of 64 names only (slot ids like A-R64-07 match the paper sheets). Later rounds stay empty until
+          an operator taps a BYE or a real winner — one next-round slot at a time. Seeded: Advanced → Intermediate →
+          Beginner/unranked, shuffle within band, snake-deal A/B. Chaos = fully random order then the same placement.
         </p>
         <label className="mt-3 flex items-center gap-2 font-black">
           <input type="checkbox" checked={includeUnchecked} onChange={(e) => setIncludeUnchecked(e.target.checked)} />
-          Include players not yet checked in (rehearsal)
+          Include players not yet checked in (freeze with the full list)
         </label>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="tap bg-gold px-6 text-ink" disabled={busy || locked} onClick={() => void generate("seeded")}>

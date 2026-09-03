@@ -132,26 +132,29 @@ function slotIsVacant(matches: Match[], match: Match, slot: 1 | 2): boolean {
   return !feeder.player1Id && !feeder.player2Id && !feeder.winnerId;
 }
 
-export function applyByeAdvances(matches: Match[]): void {
-  const order: RoundId[] = ["R64", "R32", "R16", "R8", "R4", "R2"];
-  for (const round of order) {
-    for (const match of matches.filter((m) => m.round === round)) {
-      if (match.winnerId) continue;
-      const p1 = match.player1Id;
-      const p2 = match.player2Id;
-      if (p1 && !p2 && slotIsVacant(matches, match, 2)) {
-        match.isBye = true;
-        match.winnerId = p1;
-        const next = matchById(matches, match.nextMatchId);
-        if (next && match.nextSlot) setSlot(next, match.nextSlot, p1);
-      } else if (p2 && !p1 && slotIsVacant(matches, match, 1)) {
-        match.isBye = true;
-        match.winnerId = p2;
-        const next = matchById(matches, match.nextMatchId);
-        if (next && match.nextSlot) setSlot(next, match.nextSlot, p2);
-      }
-    }
+/** Lone player vs a vacant seed — not waiting on an unfinished feeder. */
+export function isVacantBye(matches: Match[], match: Match): boolean {
+  if (match.winnerId) return false;
+  if (match.player1Id && match.player2Id) return false;
+  if (match.player1Id && !match.player2Id) return slotIsVacant(matches, match, 2);
+  if (match.player2Id && !match.player1Id) return slotIsVacant(matches, match, 1);
+  return false;
+}
+
+/**
+ * Flag one-player vacant matches as BYEs. Does not set winners or copy anyone
+ * into a later round — the operator taps the lone player to advance one slot.
+ */
+export function markByeMatches(matches: Match[]): void {
+  for (const match of matches) {
+    if (match.winnerId) continue;
+    match.isBye = isVacantBye(matches, match);
   }
+}
+
+/** @deprecated Does not auto-advance. Use markByeMatches. */
+export function applyByeAdvances(matches: Match[]): void {
+  markByeMatches(matches);
 }
 
 export function generateBracket(
@@ -163,7 +166,7 @@ export function generateBracket(
   const matches = emptyBracket();
   placePlayersOnBoard(matches, "A", boardA);
   placePlayersOnBoard(matches, "B", boardB);
-  applyByeAdvances(matches);
+  markByeMatches(matches);
   return { matches, boardA, boardB };
 }
 
@@ -180,16 +183,18 @@ export function applyWinner(matches: Match[], matchId: string, winnerId: string)
   if (!match) throw new Error(`Unknown match ${matchId}`);
   if (match.winnerId) throw new Error("Match already has a winner");
   if (!playerOnMatch(match, winnerId)) throw new Error("Winner is not in this match");
-  if (!match.player1Id || !match.player2Id) throw new Error("Match is not ready");
+  const bothReady = Boolean(match.player1Id && match.player2Id);
+  if (!bothReady && !isVacantBye(matches, match)) throw new Error("Match is not ready");
   match.winnerId = winnerId;
-  match.isBye = false;
+  match.isBye = !bothReady;
   const next = matchById(matches, match.nextMatchId);
   if (next && match.nextSlot) setSlot(next, match.nextSlot, winnerId);
-  if (match.loserNextMatchId && match.loserNextSlot) {
+  if (bothReady && match.loserNextMatchId && match.loserNextSlot) {
     const loserId = match.player1Id === winnerId ? match.player2Id : match.player1Id;
     const third = matchById(matches, match.loserNextMatchId);
     if (third && loserId) setSlot(third, match.loserNextSlot, loserId);
   }
+  markByeMatches(matches);
   return match;
 }
 
@@ -216,16 +221,18 @@ export function undoWinner(matches: Match[], matchId: string): void {
   match.winnerId = null;
   match.isBye = false;
   match.calledAt = null;
+  markByeMatches(matches);
 }
 
 export function findLateByeMatch(matches: Match[]): Match | undefined {
-  const byes = matches.filter(
+  const candidates = matches.filter(
     (m) =>
       m.round === "R64" &&
-      m.isBye &&
       ((m.player1Id && !m.player2Id) || (m.player2Id && !m.player1Id)),
   );
-  return byes.sort((a, b) => b.slot - a.slot)[0];
+  const unplayed = candidates.filter((m) => !m.winnerId);
+  const pool = unplayed.length ? unplayed : candidates;
+  return pool.sort((a, b) => b.slot - a.slot)[0];
 }
 
 export function placeLatePlayer(matches: Match[], playerId: string): Match {
@@ -238,6 +245,7 @@ export function placeLatePlayer(matches: Match[], playerId: string): Match {
   else match.player2Id = playerId;
   match.isBye = false;
   match.winnerId = null;
+  markByeMatches(matches);
   return match;
 }
 
@@ -265,6 +273,38 @@ export function matchReady(m: Match): boolean {
   return Boolean(m.player1Id && m.player2Id && !m.winnerId && !m.isBye);
 }
 
+/** Real two-player match, or a vacant BYE the operator can tap to advance one round. */
+export function matchCanSelectWinner(m: Match): boolean {
+  if (m.winnerId) return false;
+  if (m.player1Id && m.player2Id) return true;
+  return m.isBye && Boolean(m.player1Id || m.player2Id);
+}
+
 export function boardOf(matches: Match[], boardId: BoardId): Match[] {
   return matches.filter((m) => m.boardId === boardId);
 }
+
+export type RoundSnapshot = {
+  matches: number;
+  namedSlots: number;
+  winners: number;
+  pendingByes: number;
+};
+
+const SNAPSHOT_ROUNDS: RoundId[] = ["R64", "R32", "R16", "R8", "R4", "R2", "GF", "3RD"];
+
+/** Named-slot counts per round — generate should only populate R64. */
+export function roundSnapshot(matches: Match[]): Record<RoundId, RoundSnapshot> {
+  const out = {} as Record<RoundId, RoundSnapshot>;
+  for (const round of SNAPSHOT_ROUNDS) {
+    const ms = matches.filter((m) => m.round === round);
+    out[round] = {
+      matches: ms.length,
+      namedSlots: ms.reduce((n, m) => n + (m.player1Id ? 1 : 0) + (m.player2Id ? 1 : 0), 0),
+      winners: ms.filter((m) => m.winnerId).length,
+      pendingByes: ms.filter((m) => m.isBye && !m.winnerId).length,
+    };
+  }
+  return out;
+}
+
