@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { MongoLeaf, VenueChip } from "@/components/Brand";
+import { BattleTitle, MongoLeaf, VenueChip } from "@/components/Brand";
 import { useEvent } from "@/components/Providers";
 import { competitorsOf, skillLabel } from "@/lib/csv";
 import { hasRealWinner } from "@/lib/bracket";
@@ -73,7 +73,10 @@ export default function SetupPage() {
       <div className="mt-2">
         <VenueChip />
       </div>
-      <h1 className="mt-2 font-bangers chromatic text-5xl">Setup / Check-in</h1>
+      <div className="mt-2">
+        <BattleTitle size="md" />
+      </div>
+      <h1 className="mt-2 font-bangers chromatic text-4xl">Setup / Check-in</h1>
       <p className="mt-2 max-w-3xl font-cond text-lg">
         Import the Luma CSV (typo header is fine). Check people in as they arrive. Freeze & Generate around 6:30. Late
         arrivals fill a remaining odd-count bye if one exists.

@@ -1,7 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { VenueChip } from "@/components/Brand";
+import { BattleTitle, VenueChip } from "@/components/Brand";
 import { MatchCard } from "@/components/MatchCard";
 import { useEvent } from "@/components/Providers";
 import { matchReady } from "@/lib/bracket";
@@ -18,7 +18,10 @@ export default function NowPage() {
       <div className="mt-2">
         <VenueChip />
       </div>
-      <h1 className="mt-2 font-bangers chromatic text-5xl">Now Playing</h1>
+      <div className="mt-2">
+        <BattleTitle size="md" />
+      </div>
+      <h1 className="mt-2 font-bangers chromatic text-4xl now-playing-pulse">Now Playing</h1>
       <section className="mt-6">
         <h2 className="font-black text-2xl text-openai">Called ({called.length})</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-2">

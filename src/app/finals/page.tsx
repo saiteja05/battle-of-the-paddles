@@ -1,7 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/AppShell";
-import { BrandLockup, CollabStamp, VenueChip } from "@/components/Brand";
+import { BattleTitle, BrandLockup, CollabStamp, VenueChip } from "@/components/Brand";
 import { MatchCard } from "@/components/MatchCard";
 import { useEvent } from "@/components/Providers";
 import { playerMap, playerName } from "@/lib/display";
@@ -24,7 +24,10 @@ export default function FinalsPage() {
       <div className="mt-2">
         <VenueChip />
       </div>
-      <h1 className="mt-2 font-bangers chromatic text-5xl">Finals + Podium</h1>
+      <div className="mt-2">
+        <BattleTitle size="md" />
+      </div>
+      <h1 className="mt-2 font-bangers chromatic text-4xl">Finals + Podium</h1>
       <p className="mt-2 font-cond text-lg">
         A champ vs B champ for 1st/2nd. A runner-up vs B runner-up for the Quest 3. Run 3rd place while the finalists
         breathe, then slam the Grand Final.

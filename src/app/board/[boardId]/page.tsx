@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { BracketView } from "@/components/BracketView";
-import { VenueChip } from "@/components/Brand";
+import { BattleTitle, VenueChip } from "@/components/Brand";
 import type { BoardId } from "@/lib/types";
 
 export default function BoardPage() {
@@ -18,7 +18,10 @@ export default function BoardPage() {
           <p className="slam-caption">{boardB ? "Right board" : "Left board"}</p>
           <VenueChip />
         </div>
-        <h1 className="mt-2 font-bangers chromatic text-5xl">Board {boardId}</h1>
+        <div className="mt-2">
+          <BattleTitle size="md" />
+        </div>
+        <h1 className="mt-2 font-bangers chromatic text-4xl">Board {boardId}</h1>
         <p className="mt-2 max-w-3xl font-cond text-lg">
           Bracket {boardId} · 64-slot tree. Same comic chrome as Board {boardB ? "A" : "B"}, different palette.{" "}
           Slot numbers match the paper sheets (example <span className="font-black">{boardId}-R64-07</span>). Only real

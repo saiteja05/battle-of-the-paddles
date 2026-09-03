@@ -21,6 +21,7 @@ export function MatchCard({
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [flashId, setFlashId] = useState<string | null>(null);
 
   const p1 = match.player1Id ? players.get(match.player1Id) : undefined;
   const p2 = match.player2Id ? players.get(match.player2Id) : undefined;
@@ -35,13 +36,16 @@ export function MatchCard({
       return;
     }
     setBusy(true);
+    setFlashId(winnerId);
     try {
       await post(`/api/matches/${encodeURIComponent(match.id)}/winner`, { winnerId });
       setPending(null);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed");
+      setFlashId(null);
     } finally {
       setBusy(false);
+      setTimeout(() => setFlashId(null), 400);
     }
   }
 
@@ -72,6 +76,7 @@ export function MatchCard({
     if (!id) return null;
     const selected = pending && id && pending === id;
     const won = match.winnerId && id && match.winnerId === id;
+    const flashing = flashId === id;
     const label = slotName(players, id);
     return (
       <button
@@ -79,22 +84,22 @@ export function MatchCard({
         onClick={() => id && commit(id)}
         className={`tap w-full px-3 py-3 text-left ${
           won ? "bg-gold text-ink" : selected ? "confirm-glow bg-crimson text-paper" : "bg-paper text-ink"
-        } ${large ? "min-h-20 text-xl" : "min-h-14 text-base"}`}
+        } ${flashing ? "chromatic-flash" : ""} ${large ? "min-h-20 text-xl" : "min-h-14 text-base"}`}
       >
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="font-black leading-tight">{label || "\u00a0"}</div>
+            <div className={`font-black leading-tight ${won ? "slam-title-flash" : ""}`}>{label || "\u00a0"}</div>
             <div className="font-cond text-sm opacity-80">{playerSub(player)}</div>
             {selected ? <div className="mt-1 text-xs">Tap again to CONFIRM</div> : null}
           </div>
-          {won ? <MongoLeaf className="leaf-stamp h-7 w-4 shrink-0 text-leaf" /> : null}
+          {won ? <MongoLeaf className="leaf-stamp h-7 w-4 shrink-0" /> : null}
         </div>
       </button>
     );
   }
 
   return (
-    <article className={`panel relative p-2 ${match.calledAt && !decided ? "ring-4 ring-gold" : ""}`}>
+    <article className={`panel relative p-2 ${match.calledAt && !decided ? "ring-4 ring-gold now-playing-pulse" : ""}`}>
       <div className="mb-1 flex items-center justify-between gap-2">
         <span className="font-black text-gold">{match.id}</span>
         {match.isBye ? (
@@ -102,7 +107,9 @@ export function MatchCard({
             {decided ? "Advanced" : "Advances"}
           </span>
         ) : null}
-        {match.calledAt && !decided ? <span className="text-xs font-black text-openai">CALLED</span> : null}
+        {match.calledAt && !decided ? (
+          <span className="now-playing-pulse text-xs font-black text-openai">CALLED</span>
+        ) : null}
       </div>
       <div className="space-y-2">
         {slotBtn(p1, match.player1Id)}

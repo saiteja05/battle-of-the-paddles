@@ -225,3 +225,185 @@ body::after {
 ::-webkit-scrollbar-track {
   background: var(--forest);
 }
+
+/* ── Hero & title animations ── */
+
+.hero-banner {
+  background: linear-gradient(135deg, #0d0d0d 0%, #001e2b 55%, #023430 100%);
+}
+
+.halftone-drift {
+  background:
+    radial-gradient(circle, #000 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 6px 6px, 10px 10px;
+  background-position: 0 0, 3px 3px;
+  animation: halftone-drift 18s linear infinite;
+}
+
+.title-slam {
+  text-shadow:
+    -4px 0 var(--cyan),
+    4px 0 var(--crimson),
+    0 3px 0 #000,
+    6px 6px 0 #000;
+}
+
+.title-slam-accent {
+  animation: title-flash 3s ease-in-out infinite;
+}
+
+@keyframes halftone-drift {
+  0% {
+    background-position: 0 0, 3px 3px;
+  }
+  100% {
+    background-position: 48px 24px, 51px 27px;
+  }
+}
+
+@keyframes title-flash {
+  0%,
+  100% {
+    color: var(--gold);
+    text-shadow:
+      -4px 0 var(--cyan),
+      4px 0 var(--crimson),
+      0 3px 0 #000;
+  }
+  50% {
+    color: #fff;
+    text-shadow:
+      -5px 0 var(--mag),
+      5px 0 var(--cyan),
+      0 4px 0 #000;
+  }
+}
+
+/* ── Hub tiles ── */
+
+.tile-ink-wobble {
+  transition: transform 0.15s ease;
+}
+
+.tile-ink-wobble:hover {
+  animation: ink-wobble 0.45s ease;
+}
+
+@keyframes ink-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-1.2deg) scale(1.01);
+  }
+  75% {
+    transform: rotate(1.2deg) scale(1.01);
+  }
+}
+
+/* ── TV / called match pulse ── */
+
+.venue-pulse,
+.now-playing-pulse {
+  animation: gentle-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%,
+  100% {
+    box-shadow: 3px 3px 0 #000;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      3px 3px 0 #000,
+      0 0 12px var(--gold);
+    transform: scale(1.02);
+  }
+}
+
+.tv-called-pulse {
+  animation: tv-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes tv-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 208, 0, 0);
+  }
+  50% {
+    box-shadow: 0 0 18px 4px rgba(255, 208, 0, 0.35);
+  }
+}
+
+/* ── Match card winner flash ── */
+
+.chromatic-flash {
+  animation: chromatic-flash 0.35s ease-out;
+}
+
+@keyframes chromatic-flash {
+  0% {
+    filter: brightness(2) hue-rotate(0deg);
+    box-shadow:
+      0 0 0 4px var(--gold),
+      -4px 0 var(--cyan),
+      4px 0 var(--crimson);
+  }
+  100% {
+    filter: brightness(1);
+    box-shadow: 4px 4px 0 #000;
+  }
+}
+
+/* ── Winner slam extras ── */
+
+.slam-title-flash {
+  animation: slam-title-flash 0.6s ease-out;
+}
+
+@keyframes slam-title-flash {
+  0% {
+    transform: scale(1.8) rotate(-6deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05) rotate(1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.slam-chromatic-bg {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(24, 240, 255, 0.25), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255, 43, 214, 0.2), transparent 40%),
+    rgba(13, 13, 13, 0.85);
+}
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .halftone-drift,
+  .title-slam-accent,
+  .venue-pulse,
+  .now-playing-pulse,
+  .tv-called-pulse,
+  .tile-ink-wobble:hover {
+    animation: none !important;
+  }
+}
