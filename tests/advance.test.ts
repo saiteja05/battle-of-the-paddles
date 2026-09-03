@@ -151,7 +151,7 @@ describe("winner advance + cascade undo", () => {
     else expect(childAfter.player2Id).toBeNull();
   });
 
-  it("late arrival consumes a remaining BYE slot and undoes the auto-advance", () => {
+  it("late arrival consumes a remaining unplayed BYE slot", () => {
     const { matches } = generateBracket(fakePlayers(40), {
       mode: "seeded",
       rng: mulberry32(11),

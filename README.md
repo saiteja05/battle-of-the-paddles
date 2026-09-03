@@ -6,11 +6,13 @@ Prizes: **1st NVIDIA RTX 5080** · **2nd Nintendo Switch 2** · **3rd Meta Quest
 
 Two 64-slot single-elim boards (A / B), then Grand Final (A champ vs B champ) and 3rd place (runners-up, Quest 3).
 
+Night-of ops: **two physical boards, two operators**, same PIN. Generate writes **Round of 64 names only**. Later rounds stay empty until someone taps a BYE or a real winner — one next-round slot at a time. No skip-to-finals, auto-win, or prefilled podium.
+
 ## Run locally
 
 ```bash
 cp .env.example .env
-# optional, preferred:
+# preferred at the venue (Atlas) and locally:
 docker compose up -d
 npm install
 npm test
@@ -19,23 +21,25 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Operator PIN defaults to **`0909`**.
 
+Local without Docker: `STORE=file OPERATOR_PIN=0909 npm run dev` — same document shape, file fallback only.
+
 ### Datastore
 
-- **Preferred:** MongoDB 7 via `docker-compose.yml` (`MONGODB_URI=mongodb://127.0.0.1:27017/paddles`). One document in `tournaments` with `_id: "battle-of-the-paddles"`.
-- **Fallback:** if Mongo is unreachable, the API writes `data/tournament.json` with the same document shape. Force it with `STORE=file`.
+- **Preferred (venue):** MongoDB / Atlas via `MONGODB_URI`. One document in `tournaments` with `_id: "battle-of-the-paddles"`. `STORE=auto` (default) tries Mongo first.
+- **Fallback:** if Mongo is unreachable, the API writes `data/tournament.json` with the same document. Force it with `STORE=file`. `STORE=mongo` fails instead of falling back.
 - Emails are never stored or rendered. Public/TV views only show names.
 
-## Day-of runbook
+## Day-of runbook (SPIN)
 
-1. **Phones / tablets** — one operator on `/setup` + `/now`, one marker on `/board/a` or `/board/b`. Same PIN. `/tv` on a projector if you have one.
-2. **Import** — `/setup` → upload the Luma registration CSV (the `Touranment? (yes/no)` typo is expected). Parser keeps `Touranment? = Yes` **and** `approval_status = approved`, skips declined (Nathan Dalal, Sebastian Ingino), merges duplicate names (Aydan Pirani, Joseph Miano, Uzair Ahmad) and flags them in the UI. Demo file: `public/sample-players.csv` (names + skill + competing only).
+1. **Devices** — operator 1 on `/setup` + `/now`, operator 2 marking `/board/a` or `/board/b` while copying onto the paper sheet. Same PIN. `/tv` on a projector if you have one.
+2. **Import** — `/setup` → upload the Luma registration CSV (the `Touranment? (yes/no)` typo is expected). Parser keeps `Touranment? = Yes` **and** `approval_status = approved`, skips declined (Nathan Dalal, Sebastian Ingino), merges duplicate names (Aydan Pirani, Joseph Miano, Uzair Ahmad) and flags them in the UI. Sample file: `public/sample-players.csv` (names + skill + competing only).
 3. **Check-in** — tap names as people arrive. Huge targets; gold = in the door.
-4. **Freeze & Generate ~6:30** — default **Seeded**: Advanced > Intermediate > Beginner/unranked, shuffle *within* band, snake-deal across A/B (Advanced split 3 and 3), standard 64-bracket seed placement, highest seeds get R64 BYEs. **Chaos shuffle** is fully random order then the same placement. Re-generate is allowed until the first *real* (non-bye) winner.
-5. **Mark the physical boards** from match slot ids (`A-R64-07`, `B-R8-02`, …). Digital twin updates both devices via 1s poll (SSE if the browser keeps the stream).
-6. **Call to table** on `/now`. Same `quoteId` is stored on the match so both screens show the same original one-liner.
-7. **Tap winner once** (gold confirm glow) **then tap again to commit**. Undo cascades through later rounds.
-8. **Late arrivals** — check them in after freeze; they fill remaining BYE slots (auto-advance is undone so they actually play).
-9. **Finals order** — play **3rd place first** (`FINALS-3RD-01`) while finalists rest, then **Grand Final** (`FINALS-GF-01`). Podium fills from those two matches.
+4. **Freeze & Generate ~6:30** — **Seeded**: Advanced > Intermediate > Beginner/unranked, shuffle *within* band, snake-deal across A/B (Advanced split 3 and 3), standard 64-bracket seed placement, highest seeds get R64 BYE *slots* (not auto-advanced). **Chaos shuffle** is fully random order then the same placement. Re-generate is allowed until the first *real* (non-bye) winner.
+5. **Physical boards** — copy from match slot ids (`A-R64-07`, `B-R8-02`, …). Later-round slots are blank until a tap fills them. Digital twin updates both devices via 1s poll (SSE if the browser keeps the stream).
+6. **BYEs and winners** — on a one-player R64, tap the name twice to advance **one** slot into R32. Same two-tap for a real match winner. Nothing auto-cascades into R16/quarters/finals.
+7. **Call to table** on `/now` (two-player matches only). Same `quoteId` is stored on the match so both screens show the same original one-liner.
+8. **Late arrivals** — check them in after freeze; they fill remaining unplayed BYE slots so they actually play.
+9. **Finals order** — play **3rd place first** (`FINALS-3RD-01`) while finalists rest, then **Grand Final** (`FINALS-GF-01`). Podium fills from those two matches only — no fake names.
 10. **Wifi blip** — gold **OFFLINE** banner if the poll fails; last snapshot stays on screen.
 
 ### Reset
@@ -62,7 +66,7 @@ Mutating APIs require the PIN cookie (`POST /api/auth`) or header `x-operator-pi
 npm test
 ```
 
-Vitest covers Luma CSV columns, duplicate merge, declined skip, bye counts, seed placement, snake split, winner advance, cascade undo, and N ≈ 86.
+Vitest covers Luma CSV columns, duplicate merge, declined skip, R64-only generate, seed placement, snake split, one-slot winner/bye advance, cascade undo, and N ≈ 86.
 
 ## Stack
 
