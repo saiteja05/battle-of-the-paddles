@@ -4,11 +4,17 @@ Upload a CSV → run the bracket. **No database required.**
 
 ## Quick start (your Mac)
 
+Clone (after first push) or use the project folder with `package.json`:
+
 ```bash
+git clone https://github.com/saiteja05/battle-of-the-paddles.git
+cd battle-of-the-paddles
 npm install
-cp .env.example .env
+cp .env.example .env   # or: echo -e 'STORE=file\nOPERATOR_PIN=0909' > .env
 npm run dev
 ```
+
+First time pushing? See **[GITHUB_COMMIT.md](./GITHUB_COMMIT.md)**.
 
 Open http://localhost:3000 — PIN **`0909`**
 
