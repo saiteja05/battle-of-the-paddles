@@ -30,7 +30,8 @@ echo "Creating repo ${GITHUB_USER}/${REPO_NAME} (if needed)..."
 gh repo create "${REPO_NAME}" --private --source=. --remote=origin --push 2>/dev/null || {
   git remote remove origin 2>/dev/null || true
   git remote add origin "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GITHUB_USER}/${REPO_NAME}.git"
-  git push -u origin main
+  echo "Pushing main (force — overwrites GitHub if histories diverged)..."
+  git push -u origin main --force
 }
 
 echo ""
