@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "start:local": "bash scripts/start-local.sh",
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -14,6 +15,7 @@
     "framer-motion": "^11.18.2",
     "mongodb": "^6.12.0",
     "next": "^15.1.6",
+    "playwright": "^1.62.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

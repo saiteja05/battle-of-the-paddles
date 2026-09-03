@@ -12,5 +12,19 @@ services:
       timeout: 5s
       retries: 12
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      STORE: file
+      OPERATOR_PIN: "0909"
+    volumes:
+      - ./data:/app/data
+    command: ["npm", "start", "--", "-H", "0.0.0.0", "-p", "3000"]
+
 volumes:
   paddles-mongo:
