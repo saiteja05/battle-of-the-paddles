@@ -104,7 +104,7 @@ export default function SetupPage() {
             if (f) void onFile(f);
           }}
         />
-        <p className="mt-2 text-sm opacity-80">Sanitized demo: /sample-players.csv — parser still accepts the real Luma export.</p>
+        <p className="mt-2 text-sm opacity-80">Fictional demo roster: /sample-players.csv — the parser also accepts a Luma registration export.</p>
         {event.importStats ? (
           <ul className="mt-3 grid gap-2 sm:grid-cols-3 font-black">
             <li className="bg-black/40 p-2">Rows {event.importStats.rows}</li>

@@ -30,6 +30,23 @@ tsconfig.tsbuildinfo
 *.zip
 battle-of-the-paddles*.zip
 
+# Legacy GitHub Pages branch-deploy copies (Actions publishes from out/)
+/index.html
+/404.html
+/404/
+/_next/
+/board/
+/setup/
+/now/
+/finals/
+/tv/
+/logos/
+/manifest.json
+/icon.svg
+/sample-players.csv
+/.nojekyll
+/CNAME
+
 # Agent / local tooling
 agent-tools/
 

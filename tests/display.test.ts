@@ -29,12 +29,12 @@ function match(partial: Partial<Match> = {}): Match {
   };
 }
 
-const rahul: Player = {
+const pat: Player = {
   id: "p-1",
-  name: "Rahul Sharma",
-  firstName: "Rahul",
-  lastName: "Sharma",
-  company: "OpenAI",
+  name: "Pat Player",
+  firstName: "Pat",
+  lastName: "Player",
+  company: "Acme",
   jobTitle: "",
   skill: "beginner",
   competing: true,
@@ -46,9 +46,9 @@ const rahul: Player = {
 
 describe("vacant bye copy", () => {
   it("never labels an empty slot as the name BYE", () => {
-    const players = new Map<string, Player>([[rahul.id, rahul]]);
+    const players = new Map<string, Player>([[pat.id, pat]]);
     expect(slotName(players, null)).toBe("");
-    expect(slotName(players, "p-1")).toBe("Rahul Sharma");
+    expect(slotName(players, "p-1")).toBe("Pat Player");
     expect(vacantOpponentLabel()).toBe("No opponent");
     expect(vacantOpponentLabel()).not.toMatch(/bye/i);
   });
@@ -66,15 +66,15 @@ describe("vacant bye copy", () => {
   });
 
   it("does not celebrate a bye advance as a WinnerSlam name", () => {
-    expect(celebrateWinnerName([rahul], { type: "bye", winnerId: "p-1" })).toBeNull();
-    expect(celebrateWinnerName([rahul], { type: "winner", winnerId: "p-1" })).toBe("Rahul Sharma");
-    expect(celebrateWinnerName([{ ...rahul, name: "BYE" }], { type: "winner", winnerId: "p-1" })).toBeNull();
+    expect(celebrateWinnerName([pat], { type: "bye", winnerId: "p-1" })).toBeNull();
+    expect(celebrateWinnerName([pat], { type: "winner", winnerId: "p-1" })).toBe("Pat Player");
+    expect(celebrateWinnerName([{ ...pat, name: "BYE" }], { type: "winner", winnerId: "p-1" })).toBeNull();
   });
 });
 
 describe("playerSub", () => {
   it("shows skill only — not company affiliation", () => {
-    expect(playerSub(rahul)).toBe("Beginner");
-    expect(playerSub({ ...rahul, company: "OpenAI", mergedCount: 2 })).toBe("Beginner · merged×2");
+    expect(playerSub(pat)).toBe("Beginner");
+    expect(playerSub({ ...pat, company: "Acme", mergedCount: 2 })).toBe("Beginner · merged×2");
   });
 });

@@ -14,13 +14,10 @@ import { competitorsOf, importPlayersFromCsv } from "../src/lib/csv";
 import { mulberry32, seedPlacement, snakeDeal } from "../src/lib/seed";
 import type { Player } from "../src/lib/types";
 
-const REAL =
-  "/home/ubuntu/.cursor/projects/agent/uploads/9.9.26_OAI_x_Mongo_SPIN_Tournament_Registration_-_Sheet1_05a4.csv";
-const FIXTURE = path.join(__dirname, "fixtures/luma-export.redacted.csv");
+const FIXTURE = path.join(__dirname, "fixtures/luma-export.fixture.csv");
 
 function loadCompetitors(): Player[] {
-  const p = fs.existsSync(REAL) ? REAL : FIXTURE;
-  return competitorsOf(importPlayersFromCsv(fs.readFileSync(p, "utf8")).players);
+  return competitorsOf(importPlayersFromCsv(fs.readFileSync(FIXTURE, "utf8")).players);
 }
 
 describe("seed placement + snake split", () => {
